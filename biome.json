@@ -8,8 +8,7 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
-			"src/**",
-			"!**/worker-configuration.d.ts"
+			"src/**"
 		]
 	},
 	"formatter": {

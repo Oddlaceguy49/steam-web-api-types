@@ -3,23 +3,23 @@
 [![npm version](https://img.shields.io/npm/v/@oddlaceguy49/steam-web-api-types.svg)](https://www.npmjs.com/package/@oddlaceguy49/steam-web-api-types)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive set of TypeScript type definitions for the **raw JSON responses** from the official Steam Web API.
+A comprehensive set of TypeScript type definitions for the **raw JSON responses** from the official Steam Web API, with optional, ready-to-use Zod schemas for runtime validation.
 
 This package provides accurate, up-to-date interfaces for developers making direct `fetch` calls to `api.steampowered.com`, enabling full type safety and editor autocomplete for your backend projects.
 
 ## The Problem This Solves
 
-Most existing `@types` packages for Steam are for specific Node.js wrapper libraries (like `steamapi` or `steam-user`), which transform the raw API response into a different format. This package is for developers who are interacting with the **raw, untransformed API** directly, for example, in Cloudflare Workers, Deno, or modern Node.js with `fetch`.
+Most existing `@types` packages for Steam are for specific Node.js wrapper libraries (like `steamapi` or `steam-user`), which transform the raw API response into a different format. This package is for developers who are interacting with the **raw, untransformed API** directly.
 
-It provides types that match the exact, sometimes deeply nested, JSON structure that Steam's servers return.
+It provides both pure TypeScript types for static analysis and optional Zod schemas for robust runtime validation.
 
 ## Features
 
--   **Accurate:** Types are modeled directly from the official [Steam Web API documentation](https://partner.steamgames.com/doc/webapi).
--   **Comprehensive:** Aims to cover all major services (`ISteamUser`, `ISteamUserAuth`, `IPlayerService`, etc.). (Contributions welcome!)
--   **Lightweight:** Zero runtime dependencies. This is a `devDependency` only.
--   **Self-Contained:** No external type dependencies needed.
--   **Organized:** Types are split into files that mirror the Steam API services (e.g., `ISteamUser.ts`).
+-   **Types by Default:** The main entry point provides pure TypeScript types with zero runtime dependencies.
+-   **Optional Zod Schemas:** Includes a secondary `/zod` entry point with pre-built Zod schemas for easy and safe data parsing.
+-   **Accurate:** Modeled directly from the official [Steam Web API documentation](https://partner.steamgames.com/doc/webapi).
+-   **Organized:** Types and schemas are split into files that mirror the Steam API services (e.g., `ISteamUser.ts`).
+-   **Lightweight:** The default import path has zero dependencies. Zod is an optional peer dependency.
 
 ## Installation
 
@@ -37,113 +37,83 @@ npm install --save-dev @oddlaceguy49/steam-web-api-types
 yarn add --dev @oddlaceguy49/steam-web-api-types
 ```
 
-## Basic Usage
+## Basic Usage (Types Only)
 
-After installation, you can import the specific response types you need and use them to cast the `unknown` JSON data from a `fetch` call.
-
-### Example: Verifying a User Ticket
-
-This example shows how to use the types in a secure backend function to verify a session ticket.
+By default, you can import pure TypeScript interfaces for type casting and function signatures. This requires no additional libraries.
 
 ```typescript
-import type { AuthenticateUserTicketResponse } from "@oddlaceguy49/steam-web-api-types";
+import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types";
 
-async function verifySteamTicket(
-    ticket: string,
+async function getSummaries(apiKey: string, steamids: string[]) {
+    const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamids.join(
+        ","
+    )}`;
+    const response = await fetch(url);
+
+    // Use the imported type for casting.
+    const data = (await response.json()) as GetPlayerSummariesResponse;
+
+    return data.response.players;
+}
+```
+
+## Advanced Usage with Zod Schemas (Recommended)
+
+For robust runtime validation, this package provides an optional set of Zod schemas.
+
+**1. Install Zod as a dependency:**
+
+```bash
+bun add zod
+```
+
+**2. Import schemas from the `/zod` entry point:**
+Notice the import path now includes `/zod`. This gives you access to the validation schemas.
+
+```typescript
+import { GetPlayerSummariesResponseSchema } from "@oddlaceguy49/steam-web-api-types/zod";
+// You can still import the inferred type for function signatures if needed
+import type { RawPlayerSummary } from "@oddlaceguy49/steam-web-api-types";
+
+async function getSummariesSafely(
     apiKey: string,
-    appId: string
-): Promise<string | null> {
-    const url = `https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/?key=${apiKey}&appid=${appId}&ticket=${ticket}`;
+    steamids: string[]
+): Promise<RawPlayerSummary[] | null> {
+    const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamids.join(
+        ","
+    )}`;
 
     try {
         const response = await fetch(url);
         if (!response.ok) return null;
 
-        // Cast the raw JSON to your imported type
-        const data = (await response.json()) as AuthenticateUserTicketResponse;
+        const unknownData = await response.json();
 
-        // Use a type guard to safely access the properties
-        if ("params" in data.response && data.response.params.result === "OK") {
-            // TypeScript now knows `data.response.params` exists and has a `steamid` property.
-            return data.response.params.steamid;
-        } else {
-            // Handle error response
+        // Use the imported Zod schema to validate and parse the data
+        const result = GetPlayerSummariesResponseSchema.safeParse(unknownData);
+
+        if (!result.success) {
+            console.error("Validation failed:", result.error.flatten());
             return null;
         }
+
+        // result.data is now fully typed and guaranteed to be safe!
+        return result.data.response.players;
     } catch (error) {
-        console.error("Error verifying Steam ticket:", error);
+        console.error("Error fetching summaries:", error);
         return null;
     }
 }
 ```
 
-## Advanced Usage with Zod
-
-While this package provides the static types, it is highly recommended to perform **runtime validation** on any data received from an external API. The [Zod](https://zod.dev/) library is perfect for this.
-
-This package empowers you to build Zod schemas that are themselves type-checked against the official interfaces.
-
-### Example: Validating a Player Summary
-
-1.  **Install Zod:** `bun add zod`
-
-2.  **Create a validator:**
-
-    ```typescript
-    import { z } from "zod";
-    // Import the raw type from this package for comparison
-    import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types";
-
-    // Create a Zod schema that mirrors the raw type structure
-    const PlayerSummarySchema = z.object({
-        steamid: z.string(),
-        personaname: z.string(),
-        avatarfull: z.string().url(),
-        // ... other fields as needed
-    });
-
-    export const GetPlayerSummariesResponseSchema = z.object({
-        response: z.object({
-            players: z.array(PlayerSummarySchema),
-        }),
-    });
-
-    // Optional: This line ensures your Zod schema matches the package's type definition.
-    // If you update the types package and there's a breaking change, this will fail to compile.
-    type Check = z.infer<
-        typeof GetPlayerSummariesResponseSchema
-    > extends GetPlayerSummariesResponse
-        ? true
-        : false;
-    ```
-
-3.  **Use it in your function:**
-
-    ```typescript
-    async function getSummariesSafely(apiKey: string, steamids: string[]) {
-        const response = await fetch(/* ... */);
-        const unknownData = await response.json();
-
-        const result = GetPlayerSummariesResponseSchema.safeParse(unknownData);
-
-        if (!result.success) {
-            console.error("Validation failed:", result.error);
-            return null;
-        }
-
-        // result.data is now fully typed and validated at runtime!
-        return result.data.response.players;
-    }
-    ```
-
 ## Contributing
 
-Contributions are welcome! If you find a missing endpoint or an incorrect type, please feel free to open an issue or submit a pull request on the [GitHub repository](https://github.com/Oddlaceguy49/steam-web-api-types).
+Contributions are welcome! If you find a missing endpoint or an incorrect type/schema, please feel free to open an issue or submit a pull request on the [GitHub repository](https://github.com/Oddlaceguy49/steam-web-api-types).
 
 1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/add-ISteamNews-types`).
-3.  Add your new types in a new file (e.g., `src/ISteamNews.ts`).
-4.  Export them from `src/index.ts`.
+2.  Create a new branch (`git checkout -b feature/add-ISteamNews`).
+3.  Add your new types to a file in `src/types/` and the corresponding Zod schemas to a file in `src/zod/`.
+4.  Export them from `src/index.ts` and `src/zod.ts` respectively.
 5.  Submit a pull request.
 
 ## License
