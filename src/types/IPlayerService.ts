@@ -2,28 +2,36 @@
  * @see https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames
  */
 export interface GetRecentlyPlayedGamesRequest {
-	steamid: string;
-	count?: number;
+  /** @pattern ^[0-9]{17}$ */
+  steamid: string;
+  /** @minimum 0 */
+  count?: number;
 }
 
 /*** Represents a recently played game.
  */
 export interface RecentlyPlayedGame {
-	appid: number;
-	name: string;
-	playtime_2weeks: number;
-	playtime_forever: number;
-	img_icon_url: string;
-	img_logo_url: string;
-	has_community_visible_stats: boolean;
+  /** @minimum 1 */
+  appid: number;
+  name: string;
+  /** @minimum 0 */
+  playtime_2weeks: number;
+  /** @minimum 0 */
+  playtime_forever: number;
+  /** @format url */
+  img_icon_url: string;
+  /** @format url */
+  img_logo_url: string;
+  has_community_visible_stats: boolean;
 }
 
-/*** The response from the IPlayerService/GetRecentlyPlayedGames/v1 endpoint.
+/*** The response from the ISteamService/GetRecentlyPlayedGames/v1 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames
  */
 export interface GetRecentlyPlayedGamesResponse {
-	response: {
-		total_count: number;
-		games: RecentlyPlayedGame[];
-	};
+  response: {
+    /** @minimum 0 */
+    total_count: number;
+    games: RecentlyPlayedGame[];
+  };
 }
