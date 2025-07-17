@@ -8,7 +8,9 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
-			"src/**"
+			"src/**",
+			"scripts/**",
+			"!**/src/zod"
 		]
 	},
 	"formatter": {

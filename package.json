@@ -6,7 +6,13 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "// --- GENERATOR SCRIPTS ---": "",
+    "gen:zod": "bun run scripts/generateZod.ts",
+    "gen:typebox": "typebox-codegen --input src/types --output src/typebox",
+    "// --- MAIN BUILD SCRIPT ---": "",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "gen": "echo 'Running all schema generators...' && bun run gen:zod && bun run gen:typebox",
+    "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
@@ -14,6 +20,7 @@
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.14",
     "bun-types": "^1.2.18",
+    "glob": "^11.0.3",
     "ts-to-zod": "^3.15.0",
     "typescript": "^5.8.3"
   },
@@ -34,5 +41,8 @@
     "zod": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@oclif/core": "^4.5.1"
   }
 }
