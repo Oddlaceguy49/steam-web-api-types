@@ -1,61 +1,66 @@
-// generate-typebox.mjs
 import fs from "node:fs/promises";
 import path from "node:path";
-import * as Codegen from "@sinclair/typebox-codegen";
 import { glob } from "glob";
+import { generate } from "ts-to-zod";
 
 // --- Configuration ---
 const inputDir = "src/types";
-const outputDir = "src/typebox";
+const outputDir = "src/generated/zod";
 
 async function main() {
-	console.log("Starting TypeBox schema generation...");
+	console.log("Starting Zod schema generation...");
 
-	// Find all .ts files recursively in the input directory
+	// Find all .ts files in the input directory
 	const inputFiles = await glob(`${inputDir}/**/*.ts`);
 
 	if (inputFiles.length === 0) {
-		console.warn(`No TypeScript files found in ${inputDir}. Exiting.`);
+		console.warn(`No input files found in ${inputDir}. Exiting.`);
 		return;
 	}
 
-	// Ensure the output directory exists, ignoring errors if it already does
 	try {
+		// Ensure the output directory exists
 		await fs.mkdir(outputDir, { recursive: true });
 	} catch (error) {
-		if (error.code !== "EEXIST") throw error;
+		// If the error is anything OTHER than "directory already exists", re-throw it.
+		if (error.code !== "EEXIST") {
+			throw error;
+		}
+		// If it's EEXIST, safely ignore it and continue.
 	}
 
 	console.log(`Found ${inputFiles.length} files to process...`);
 
+	// Loop through each input file and generate the corresponding output
 	for (const inputFile of inputFiles) {
-		// Get the relative path from the input directory to preserve the structure
-		const relativePath = path.relative(inputDir, inputFile);
-		const outputFile = path.join(outputDir, relativePath);
+		const fileName = path.basename(inputFile);
+		const outputFile = path.join(outputDir, fileName);
 
 		console.log(`- Processing ${inputFile} -> ${outputFile}`);
 
-		// Ensure the subdirectory for the output file exists
-		await fs.mkdir(path.dirname(outputFile), { recursive: true });
-
-		// Read the source TypeScript file content
+		// Read the source file content
 		const sourceText = await fs.readFile(inputFile, "utf-8");
 
-		// Use the `Generate` function from typebox-codegen
-		const typeboxSchemasText = Codegen.TypeScriptToTypeBox.Generate(sourceText);
-
-		// Add a header comment to the generated file
-		const combinedOutput = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n${typeboxSchemasText}`;
+		// Use the `generate` function from ts-to-zod
+		const { getZodSchemasFile } = generate({
+			sourceText: sourceText,
+			// Keep JSDoc comments
+			keepComments: true,
+		});
 
 		// Write the generated content to the output file
+		const zodSchemasText = getZodSchemasFile(fileName); // Pass original filename for context
+
+		const combinedOutput = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n${zodSchemasText}`;
+
 		await fs.writeFile(outputFile, combinedOutput);
 	}
 
-	console.log("✅ TypeBox schema generation complete!");
+	console.log("✅ Zod schema generation complete!");
 }
 
-// Run the main function and handle any potential errors
+// Run the main function and handle any errors
 main().catch((error) => {
-	console.error("❌ Error during TypeBox schema generation:", error);
+	console.error("Error during Zod schema generation:", error);
 	process.exit(1);
 });
