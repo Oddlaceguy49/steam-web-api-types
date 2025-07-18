@@ -7,16 +7,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "// --- GENERATOR SCRIPTS ---": "",
-    "gen:zod": "bun run scripts/generateZod.ts",
-    "gen:typebox": "bun run scripts/generateTypebox.ts typebox",
-    "gen:valibot": "bun run scripts/generateTypebox.ts valibot",
-    "gen:yup": "bun run scripts/generateTypebox.ts yup",
-    "gen:arktype": "bun run scripts/generateTypebox.ts arktype",
-    "gen:effect": "bun run scripts/generateTypebox.ts effect",
-    "gen:jsonschema": "bun run scripts/generateTypebox.ts jsonschema",
+    "gen-script": "bun run scripts/generateSchemas.ts",
+    "gen:zod": "bun run gen-script zod",
+    "gen:typebox": "bun run gen-script typebox",
+    "gen:valibot": "bun run gen-script valibot",
+    "gen:yup": "bun run gen-script yup",
+    "gen:arktype": "bun run gen-script arktype",
+    "gen:effect": "bun run gen-script effect",
+    "gen:jsonschema": "bun run gen-script jsonschema",
     "// --- MAIN BUILD SCRIPT ---": "",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "gen": "echo 'Running all schema generators...' && bun run gen:zod && bun run gen:typebox",
+    "gen": "echo 'Running all schema generators...' && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:arktype && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
@@ -39,17 +40,57 @@
     "./zod": {
       "import": "./dist/zod.js",
       "types": "./dist/zod.d.ts"
+    },
+    "./typebox": {
+      "import": "./dist/typebox.js",
+      "types": "./dist/typebox.d.ts"
+    },
+    "./valibot": {
+      "import": "./dist/valibot.js",
+      "types": "./dist/valibot.d.ts"
+    },
+    "./yup": {
+      "import": "./dist/yup.js",
+      "types": "./dist/yup.d.ts"
+    },
+    "./arktype": {
+      "import": "./dist/arktype.js",
+      "types": "./dist/arktype.d.ts"
+    },
+    "./effect": {
+      "import": "./dist/effect.js",
+      "types": "./dist/effect.d.ts"
     }
   },
   "peerDependencies": {
-    "zod": "^3.0.0",
-    "typebox": "^0.0.1"
+    "@effect/schema": "^0.75.5",
+    "arktype": "^2.1.20",
+    "effect": "^3.16.16",
+    "typebox": "^0.0.1",
+    "valibot": "^1.1.0",
+    "yup": "^1.6.1",
+    "zod": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
       "optional": true
     },
     "typebox": {
+      "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "yup": {
+      "optional": true
+    },
+    "arktype": {
+      "optional": true
+    },
+    "effect": {
+      "optional": true
+    },
+    "@effect/schema": {
       "optional": true
     }
   }

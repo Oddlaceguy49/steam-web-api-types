@@ -1,0 +1,121 @@
+// THIS FILE IS AUTO-GENERATED FOR ARKTYPE. DO NOT EDIT.
+
+import { scope, type } from "arktype";
+
+export const types = scope({
+	GetNewsForAppRequest: type({
+		appid: "number>=1",
+		"maxlength?": "number>=0",
+		"enddate?": "number",
+		"count?": "number>=0",
+		"feeds?": "string",
+		"tags?": "string",
+	}),
+	NewsItem_properties_title: "string",
+	NewsItem_properties_url: "string",
+	NewsItem_properties_is_external_url: "boolean",
+	NewsItem_properties_author: "string",
+	NewsItem_properties_contents: "string",
+	NewsItem_properties_feedlabel: "string",
+	NewsItem_properties_date: "number",
+	NewsItem_properties_feedname: "string",
+	NewsItem_properties_feed_type: "number",
+	NewsItem_properties_appid: "number>=1",
+	GetNewsForAppResponse_properties_appnews_properties_appid: "number>=1",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url:
+		"boolean",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date:
+		"number",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname:
+		"string",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type:
+		"number",
+	GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid:
+		"number>=1",
+}).export();
+
+export type GetNewsForAppRequest = typeof GetNewsForAppRequest.infer;
+export const GetNewsForAppRequest = types.GetNewsForAppRequest;
+export type NewsItem_properties_title = typeof NewsItem_properties_title.infer;
+export const NewsItem_properties_title = types.NewsItem_properties_title;
+export type NewsItem_properties_url = typeof NewsItem_properties_url.infer;
+export const NewsItem_properties_url = types.NewsItem_properties_url;
+export type NewsItem_properties_is_external_url =
+	typeof NewsItem_properties_is_external_url.infer;
+export const NewsItem_properties_is_external_url =
+	types.NewsItem_properties_is_external_url;
+export type NewsItem_properties_author =
+	typeof NewsItem_properties_author.infer;
+export const NewsItem_properties_author = types.NewsItem_properties_author;
+export type NewsItem_properties_contents =
+	typeof NewsItem_properties_contents.infer;
+export const NewsItem_properties_contents = types.NewsItem_properties_contents;
+export type NewsItem_properties_feedlabel =
+	typeof NewsItem_properties_feedlabel.infer;
+export const NewsItem_properties_feedlabel =
+	types.NewsItem_properties_feedlabel;
+export type NewsItem_properties_date = typeof NewsItem_properties_date.infer;
+export const NewsItem_properties_date = types.NewsItem_properties_date;
+export type NewsItem_properties_feedname =
+	typeof NewsItem_properties_feedname.infer;
+export const NewsItem_properties_feedname = types.NewsItem_properties_feedname;
+export type NewsItem_properties_feed_type =
+	typeof NewsItem_properties_feed_type.infer;
+export const NewsItem_properties_feed_type =
+	types.NewsItem_properties_feed_type;
+export type NewsItem_properties_appid = typeof NewsItem_properties_appid.infer;
+export const NewsItem_properties_appid = types.NewsItem_properties_appid;
+export type GetNewsForAppResponse_properties_appnews_properties_appid =
+	typeof GetNewsForAppResponse_properties_appnews_properties_appid.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_appid =
+	types.GetNewsForAppResponse_properties_appnews_properties_appid;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type;
+export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
+	typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid.infer;
+export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
+	types.GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid;

@@ -1,0 +1,139 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import * as Codegen from "@sinclair/typebox-codegen";
+import { glob } from "glob";
+import { generate as generateZod } from "ts-to-zod";
+
+const generators = {
+	typebox: Codegen.TypeScriptToTypeBox,
+	zod: "ts-to-zod", // Use a string placeholder for our special case
+	valibot: Codegen.ModelToValibot,
+	yup: Codegen.ModelToYup,
+	arktype: Codegen.ModelToArkType,
+	effect: Codegen.ModelToEffect,
+	jsonschema: Codegen.ModelToJsonSchema,
+};
+
+async function generateIndexFile(baseOutputDir) {
+	const schemaDir = path.join(baseOutputDir, "types");
+	console.log(`\n📦 Generating index file for ${baseOutputDir}...`);
+
+	const globPath = `${schemaDir.replace(/\\/g, "/")}/**/*.ts`;
+
+	const generatedFiles = await glob(globPath, {
+		ignore: "**/index.ts",
+	});
+
+	if (generatedFiles.length === 0) {
+		console.log(`   -> No files found in ${globPath} to index. Skipping.`);
+		return;
+	}
+
+	let indexContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
+
+	for (const file of generatedFiles) {
+		const fileContent = await fs.readFile(file, "utf-8");
+		const exportRegex =
+			/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*=/g;
+		const allMatches = [...fileContent.matchAll(exportRegex)];
+		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
+
+		if (exportedNames.length > 0) {
+			const relativePath = path
+				.relative(baseOutputDir, file)
+				.replace(/\\/g, "/")
+				.replace(/\.ts$/, "");
+
+			indexContent += `export {\n\t${exportedNames.join(
+				",\n\t"
+			)},\n} from "./${relativePath}";\n\n`;
+		}
+	}
+
+	const indexFilePath = path.join(baseOutputDir, "index.ts");
+	await fs.writeFile(indexFilePath, indexContent);
+	console.log(`   -> ✅ Index file generated at ${indexFilePath}`);
+}
+
+async function main() {
+	const targetPackage = process.argv[2];
+
+	if (!targetPackage || !generators[targetPackage.toLowerCase()]) {
+		console.error("❌ Error: You must specify a valid target package.");
+		console.error(`Usage: node generate.mjs <package-name>`);
+		console.error(`Available packages: ${Object.keys(generators).join(", ")}`);
+		process.exit(1);
+	}
+
+	console.log(`🚀 Starting schema generation for: ${targetPackage}`);
+
+	const inputDir = "src/types";
+	const baseOutputDir = path.join("src/generated", targetPackage.toLowerCase());
+	const schemaOutputDir = path.join(baseOutputDir, "types");
+
+	console.log(`\n🧹 Cleaning up previous output in ${baseOutputDir}...`);
+	await fs.rm(baseOutputDir, { recursive: true, force: true });
+	console.log("   -> Cleanup complete.");
+
+	const inputFiles = await glob(`${inputDir}/**/*.ts`);
+
+	if (inputFiles.length === 0) {
+		console.warn(`No TypeScript files found in ${inputDir}. Exiting.`);
+		return;
+	}
+
+	await fs.mkdir(schemaOutputDir, { recursive: true });
+	console.log(`\nFound ${inputFiles.length} files to process...`);
+
+	for (const inputFile of inputFiles) {
+		const relativePath = path.relative(inputDir, inputFile);
+		const outputFile = path.join(schemaOutputDir, relativePath);
+
+		console.log(`- Processing ${inputFile} -> ${outputFile}`);
+		await fs.mkdir(path.dirname(outputFile), { recursive: true });
+
+		const sourceText = await fs.readFile(inputFile, "utf-8");
+
+		let generatedCode: any;
+
+		// SPECIAL CASE: Use the dedicated ts-to-zod generator for Zod.
+		if (targetPackage.toLowerCase() === "zod") {
+			const { getZodSchemasFile } = generateZod({
+				sourceText,
+				keepComments: true,
+			});
+			generatedCode = getZodSchemasFile(inputFile);
+		} else {
+			// DEFAULT CASE: Use the typebox-codegen generators for all other targets.
+			const selectedGenerator = generators[targetPackage.toLowerCase()];
+
+			if (targetPackage.toLowerCase() === "typebox") {
+				generatedCode = selectedGenerator.Generate(sourceText);
+			} else {
+				const model = Codegen.TypeScriptToModel.Generate(sourceText);
+				generatedCode = selectedGenerator.Generate(model);
+			}
+
+			// Fix for Yup import
+			if (targetPackage.toLowerCase() === "yup") {
+				generatedCode = generatedCode.replace(
+					"import y from 'yup'",
+					"import * as y from 'yup'"
+				);
+			}
+		}
+
+		const combinedOutput = `// THIS FILE IS AUTO-GENERATED FOR ${targetPackage.toUpperCase()}. DO NOT EDIT.\n\n${generatedCode}`;
+		await fs.writeFile(outputFile, combinedOutput);
+	}
+
+	console.log(`\n✅ Schema file generation for ${targetPackage} complete!`);
+	console.log(`   Output directory: ${schemaOutputDir}`);
+
+	await generateIndexFile(baseOutputDir);
+}
+
+main().catch((error) => {
+	console.error("❌ Error during schema generation:", error);
+	process.exit(1);
+});
