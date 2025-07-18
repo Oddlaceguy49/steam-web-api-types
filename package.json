@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "// --- GENERATOR SCRIPTS ---": "",
     "gen:zod": "bun run scripts/generateZod.ts",
-    "gen:typebox": "typebox-codegen --input src/types --output src/typebox",
+    "gen:typebox": "bun run scripts/generateTypebox.ts",
     "// --- MAIN BUILD SCRIPT ---": "",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "gen": "echo 'Running all schema generators...' && bun run gen:zod && bun run gen:typebox",
@@ -21,6 +21,7 @@
     "@types/node": "^24.0.14",
     "bun-types": "^1.2.18",
     "glob": "^11.0.3",
+    "lefthook": "^1.12.2",
     "ts-to-zod": "^3.15.0",
     "typescript": "^5.8.3"
   },
@@ -35,14 +36,15 @@
     }
   },
   "peerDependencies": {
-    "zod": "^3.0.0"
+    "zod": "^3.0.0",
+    "typebox": "^0.0.1"
   },
   "peerDependenciesMeta": {
     "zod": {
       "optional": true
+    },
+    "typebox": {
+      "optional": true
     }
-  },
-  "dependencies": {
-    "@oclif/core": "^4.5.1"
   }
 }
