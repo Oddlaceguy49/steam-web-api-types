@@ -1,10 +1,13 @@
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
+import * as Codegen from "@sinclair/typebox-codegen";
 import { glob } from "glob";
-import { Project, Node } from "ts-morph";
+import { jsonSchemaToValibot } from "json-schema-to-valibot";
 import { format } from "prettier";
-import { jsonSchemaToZod } from "json-schema-to-zod";
+import { Project } from "ts-morph";
+import { generate as generateZod } from "ts-to-zod";
 import * as TJS from "typescript-json-schema"; // The programmatic API for typescript-json-schema
+import { generateArkTypeString, generateYupString } from "./utils/utils";
 
 // --- Script Configuration ---
 
@@ -20,7 +23,8 @@ const SCRIPT_CONFIG = {
 	STRATEGIES: {
 		TYPES: "types",
 		JSON_SCHEMA: "json-schema",
-		TYPEBOX_DIRECT: "typebox-direct", // Kept as an example of a custom path
+		TYPESCRIPT_DIRECT: "typescript-direct",
+		INTERFACE: "interface",
 	},
 	MAIN_EXPORT_REGEX:
 		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g,
@@ -30,14 +34,14 @@ const SCRIPT_CONFIG = {
 
 // Maps the command-line argument to the correct strategy.
 const targetConfig = {
-	types: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPES },
-	typebox: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPEBOX_DIRECT },
-	zod: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
-	yup: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
-	valibot: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
-	arktype: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
-	effect: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
-	jsonschema: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	types: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPES }, // Added Kinda
+	typebox: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT }, // Added
+	zod: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT }, // Added
+	yup: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
+	valibot: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
+	// arktype: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // REALLY DAMN HARD
+	effect: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT }, // Added
+	jsonschema: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
 };
 
 // --- Generation Strategies ---
@@ -45,100 +49,184 @@ const targetConfig = {
 const strategies = {
 	[SCRIPT_CONFIG.STRATEGIES.TYPES]: {
 		generate: async ({ inputFile }) => {
-			const project = new Project();
 			const sourceText = await fs.readFile(inputFile, "utf-8");
-			const sourceFile = project.createSourceFile(inputFile, sourceText, {
-				overwrite: true,
-			});
-
-			const interfacesToProcess = sourceFile.getInterfaces();
-			while (interfacesToProcess.length > 0) {
-				const currentInterface = interfacesToProcess.shift();
-				if (!currentInterface) continue;
-				const parentInterfaceName = currentInterface.getName();
-				for (const prop of currentInterface.getProperties()) {
-					const propName = prop.getName();
-					const typeNode = prop.getTypeNode();
-					if (typeNode && Node.isTypeLiteral(typeNode)) {
-						const newInterfaceName = `${parentInterfaceName}${SCRIPT_CONFIG.FLATTEN_SEPARATOR}${propName}`;
-						const newInterface = sourceFile.addInterface({
-							name: newInterfaceName,
-							isExported: true,
-							properties: typeNode
-								.getMembers()
-								.filter(Node.isPropertySignature)
-								.map((m) => m.getStructure()),
-						});
-						interfacesToProcess.push(newInterface);
-						prop.setType(newInterfaceName);
-					}
-				}
-			}
-			return sourceFile.getFullText();
+			return sourceText;
 		},
 	},
 
-	[SCRIPT_CONFIG.STRATEGIES.TYPEBOX_DIRECT]: {
-		generate: async () => {
-			throw new Error(
-				"TypeBox direct generation is not implemented. Please add the '@sinclair/typebox-codegen' dependency and necessary logic if this path is required."
-			);
-		},
-	},
-
-	[SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA]: {
-		generate: async ({ inputFile, program, targetArg }) => {
-			// Stage 1: Generate high-fidelity JSON Schema from the pre-compiled TS Program.
-			console.log(`   -> ⚙️ Generating intermediate JSONSchema...`);
-			const settings: TJS.PartialArgs = {
-				required: true,
-				strictNullChecks: true,
-				noExtraProps: true,
-				ref: true, // Create reusable definitions for shared interfaces
-			};
-			const schema = TJS.generateSchema(program, "*", settings, [inputFile]);
-
-			if (!schema) {
-				console.warn(`   -> ⚠️ No schema generated for ${inputFile}. Skipping.`);
-				return null; // Signal that no file should be written
-			}
-
-			// Stage 2: Convert the in-memory JSON Schema object to the final target format.
-			console.log(
-				`   -> ⚙️ Converting JSONSchema to ${targetArg.toUpperCase()}...`
-			);
+	[SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT]: {
+		generate: async ({ inputFile, targetArg }) => {
+			let generatedCode: string;
+			const sourceText = await fs.readFile(inputFile, "utf-8");
 			switch (targetArg) {
-				case "jsonschema":
-					// For jsonschema itself, just return the pretty-printed JSON.
-					return `export default ${JSON.stringify(schema, null, 2)} as const;`;
-				case "zod":
-					// The name 'schema' will be used for the main export if no top-level $id is found
-					return jsonSchemaToZod(schema, { name: "schema" });
-				// Other cases would be added here
+				case "zod": {
+					const { getZodSchemasFile } = generateZod({
+						sourceText,
+						keepComments: true,
+					});
+					generatedCode = getZodSchemasFile(inputFile);
+					break;
+				}
+				case "typebox":
+					generatedCode = Codegen.TypeScriptToTypeBox.Generate(sourceText);
+					break;
+				case "effect": {
+					const model = Codegen.TypeScriptToModel.Generate(sourceText);
+					generatedCode = Codegen.ModelToEffect.Generate(model);
+					break;
+				}
 				default:
 					console.warn(
 						`   -> ⚠️ Converter for '${targetArg}' not implemented. Returning raw JSONSchema.`
 					);
-					return `// TODO: Implement JSONSchema to ${targetArg} conversion\nexport const schema = ${JSON.stringify(
-						schema,
-						null,
-						2
-					)};`;
+					generatedCode = `// TODO: Implement JSONSchema to ${targetArg} conversion.`;
+					break;
 			}
+			return generatedCode;
+		},
+	},
+	[SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA]: {
+		generate: async ({ inputFile, program, targetArg }) => {
+			// Step 1: Get the list of all exported types from the current file.
+			// Using ts-morph here is robust and simple.
+			const project = new Project();
+			const sourceFile = project.addSourceFileAtPath(inputFile);
+			const exportedSymbols = sourceFile.getExportedDeclarations();
+			const typeNames = Array.from(exportedSymbols.keys());
+
+			if (typeNames.length === 0) {
+				console.log(
+					`   -> ⚠️ No exported types found in ${inputFile}. Skipping.`
+				);
+				return null;
+			}
+			console.log(`   -> Found types to process: ${typeNames.join(", ")}`);
+
+			const allGeneratedCode: string[] = [];
+			const settings: TJS.PartialArgs = {
+				required: true,
+				strictNullChecks: true,
+				noExtraProps: true,
+				// Set ref to false to generate self-contained schemas for each type.
+				ref: false,
+			};
+
+			const schemas: TJS.Definition[] = [];
+
+			// Step 2: Loop and generate a schema FOR EACH TYPE individually.
+			for (const typeName of typeNames) {
+				// We can skip generating schemas for the flattened property types if desired,
+				// as they will be inlined into their parent schema.
+				if (typeName.includes(SCRIPT_CONFIG.FLATTEN_SEPARATOR)) {
+					continue;
+				}
+
+				console.log(`   -> ⚙️ Generating schema for type: ${typeName}`);
+				const schema = TJS.generateSchema(program, typeName, settings);
+
+				if (!schema || Object.keys(schema).length <= 1) {
+					console.warn(
+						`   -> ⚠️  Schema for type '${typeName}' was empty. Skipping.`
+					);
+					continue;
+				}
+
+				// IMPORTANT: Add an $id to the schema. This is what json-schema-to-zod
+				// uses to name the exported const (e.g., export const MyType = ...).
+				schema.$id = typeName;
+				schemas.push(schema);
+
+				// Step 3: Convert each individual schema to the target format.
+				let convertedCode: string;
+				switch (targetArg) {
+					case "jsonschema":
+						// For jsonschema itself, export each definition individually.
+						convertedCode = `export const ${typeName} = ${JSON.stringify(
+							schema,
+							null,
+							2
+						)} as const;`;
+						break;
+					case "valibot": {
+						// The 'name' option is a fallback; the $id property will be preferred.
+						convertedCode = jsonSchemaToValibot(
+							schema as unknown as import("json-schema-to-valibot").JsonSchema,
+							{
+								name: typeName,
+								withJsDoc: true,
+								module: "esm",
+								exportDefinitions: true,
+							}
+						);
+						// Remove import statements
+						const valibotImportRegex =
+							/^import .* from ["']valibot["'];?\r?\n?/gm;
+
+						convertedCode = convertedCode.replace(valibotImportRegex, "");
+
+						break;
+					}
+					case "yup": {
+						const yupSchemaString = generateYupString(schema, true); // Assume top-level is required
+
+						// Assemble the final export statement
+						convertedCode = `export const ${typeName}Schema = ${yupSchemaString};`;
+						break;
+					}
+					case "arktype": {
+						const arktypeDef = generateArkTypeString(schema);
+						let arktypeExport: string;
+
+						arktypeExport = `export const ${typeName} = type(${arktypeDef});`;
+
+						const tsTypeExport = `export type ${typeName}Type = typeof ${typeName}.infer;`;
+
+						convertedCode = `${arktypeExport}\n${tsTypeExport}`;
+						break;
+					}
+					default:
+						console.warn(
+							`   -> ⚠️ Converter for '${targetArg}' not implemented. Returning raw JSONSchema.`
+						);
+						convertedCode = `// TODO: Implement JSONSchema to ${targetArg} conversion\nexport const ${typeName} = ${JSON.stringify(
+							schema,
+							null,
+							2
+						)};`;
+						break;
+				}
+				allGeneratedCode.push(convertedCode);
+			}
+
+			// Step 4: Join all the generated code blocks into a single file's content.
+			if (allGeneratedCode.length === 0) {
+				return null; // Nothing was generated, so don't create a file.
+			}
+
+			if (targetArg === "zod") {
+				return `import { zod } from "zod";\n\n${allGeneratedCode.join("\n\n")}`;
+			} else if (targetArg === "valibot") {
+				return `import * as v from "valibot";\n\n${allGeneratedCode.join(
+					"\n\n"
+				)}`;
+			} else if (targetArg === "yup") {
+				return `import * as yup from "yup";\n\n${allGeneratedCode.join(
+					"\n\n"
+				)}`;
+			} else if (targetArg === "arktype") {
+				return `import { type } from "arktype";\n\n${allGeneratedCode.join(
+					"\n\n"
+				)}`;
+			}
+
+			return allGeneratedCode.join("\n\n");
 		},
 	},
 };
 
 // --- Post-Processing Fixups ---
 // These might not be needed with the new pipeline but are kept for reference.
-const postProcessors = {
-	yup: async (code) => {
-		/* ... */
-	},
-	arktype: async (code) => {
-		/* ... */
-	},
-};
+const postProcessors = {};
 
 // --- Utility Functions ---
 
@@ -196,12 +284,12 @@ async function generateBarrelFiles(baseOutputDir, schemaOutputDir) {
 		SCRIPT_CONFIG.BARREL_FILES.INDEX,
 		SCRIPT_CONFIG.MAIN_EXPORT_REGEX
 	);
-	await generateBarrelFile(
-		baseOutputDir,
-		generatedFiles,
-		SCRIPT_CONFIG.BARREL_FILES.DETAILS,
-		SCRIPT_CONFIG.DETAILS_EXPORT_REGEX
-	);
+	// await generateBarrelFile(
+	// 	baseOutputDir,
+	// 	generatedFiles,
+	// 	SCRIPT_CONFIG.BARREL_FILES.DETAILS,
+	// 	SCRIPT_CONFIG.DETAILS_EXPORT_REGEX,
+	// );
 }
 
 // --- Main Execution Logic ---
@@ -239,7 +327,7 @@ async function main() {
 
 	// Create a single TS Program instance that includes all our files.
 	// This is much faster than compiling each file individually inside the loop.
-	let tsProgram;
+	let tsProgram: any;
 	if (currentTarget.strategy === SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA) {
 		console.log(
 			"\nAnalyzing TypeScript project to create a single Program instance..."

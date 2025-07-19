@@ -1,22 +1,65 @@
 // THIS FILE IS AUTO-GENERATED FOR BARREL FILE. DO NOT EDIT.
 
 export {
-	types,
 	AuthenticateUserTicketRequest,
+	AuthenticateUserTicketRequestType,
+	AuthenticateUserTicketResponse,
+	AuthenticateUserTicketResponseType,
 } from "./types/ISteamUserAuth";
 
 export {
-	types,
+	PlayerSummary,
+	PlayerSummaryType,
+	GetPlayerSummariesResponse,
+	GetPlayerSummariesResponseType,
+	CheckAppOwnershipRequest,
+	CheckAppOwnershipRequestType,
+	CheckAppOwnershipResponse,
+	CheckAppOwnershipResponseType,
+	GetDeletedSteamIDsRequest,
+	GetDeletedSteamIDsRequestType,
+	DeletedSteamID,
+	DeletedSteamIDType,
+	GetDeletedSteamIDsResponse,
+	GetDeletedSteamIDsResponseType,
+	GetUserGroupListRequest,
+	GetUserGroupListRequestType,
+	UserGroup,
+	UserGroupType,
+	GetUserGroupListResponse,
+	GetUserGroupListResponseType,
 	ResolveVanityURLRequest,
+	ResolveVanityURLRequestType,
+	ResolveVanityURLResponse,
+	ResolveVanityURLResponseType,
+	GetFriendListRequest,
+	GetFriendListRequestType,
+	Friend,
+	FriendType,
+	GetFriendListResponse,
+	GetFriendListResponseType,
+	GetPlayerBansRequest,
+	GetPlayerBansRequestType,
+	PlayerBan,
+	PlayerBanType,
+	GetPlayerBansResponse,
+	GetPlayerBansResponseType,
 } from "./types/ISteamUser";
 
 export {
-	types,
 	GetNewsForAppRequest,
+	GetNewsForAppRequestType,
+	NewsItem,
+	NewsItemType,
+	GetNewsForAppResponse,
+	GetNewsForAppResponseType,
 } from "./types/ISteamNews";
 
 export {
-	types,
+	GetRecentlyPlayedGamesRequest,
+	GetRecentlyPlayedGamesRequestType,
 	RecentlyPlayedGame,
+	RecentlyPlayedGameType,
 	GetRecentlyPlayedGamesResponse,
+	GetRecentlyPlayedGamesResponseType,
 } from "./types/IPlayerService";

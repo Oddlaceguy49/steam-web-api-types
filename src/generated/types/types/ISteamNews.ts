@@ -94,14 +94,12 @@ export interface NewsItem {
  * @description Response containing news items for a specific app.
  */
 export interface GetNewsForAppResponse {
-	appnews: GetNewsForAppResponse_properties_appnews;
-}
-
-export interface GetNewsForAppResponse_properties_appnews {
-	/**
-	 * @minimum 1
-	 * @description The AppID of the game.
-	 */
-	appid: number;
-	newsitems: NewsItem[];
+	appnews: {
+		/**
+		 * @minimum 1
+		 * @description The AppID of the game.
+		 */
+		appid: number;
+		newsitems: NewsItem[];
+	};
 }

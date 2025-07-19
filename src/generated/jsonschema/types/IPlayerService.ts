@@ -1,14 +1,28 @@
 // THIS FILE IS AUTO-GENERATED FOR JSONSCHEMA. DO NOT EDIT.
 
-export const GetRecentlyPlayedGamesRequest_properties_count = {
-	minimum: 0,
-	description: "The number of games to return (0 to 100).",
-	type: "number",
-	$id: "GetRecentlyPlayedGamesRequest_properties_count",
-};
+export const GetRecentlyPlayedGamesRequest = {
+	description: "Parameters for retrieving recently played games for a user.",
+	type: "object",
+	properties: {
+		steamid: {
+			pattern: "^[0-9]{17}$",
+			description: "The 64-bit SteamID of the user.",
+			type: "string",
+		},
+		count: {
+			minimum: 0,
+			description: "The number of games to return (0 to 100).",
+			type: "number",
+		},
+	},
+	additionalProperties: false,
+	required: ["steamid"],
+	$schema: "http://json-schema.org/draft-07/schema#",
+	$id: "GetRecentlyPlayedGamesRequest",
+} as const;
+
 export const RecentlyPlayedGame = {
 	description: "Information about a recently played game.",
-	$id: "RecentlyPlayedGame",
 	type: "object",
 	properties: {
 		appid: {
@@ -45,25 +59,25 @@ export const RecentlyPlayedGame = {
 			type: "boolean",
 		},
 	},
+	additionalProperties: false,
 	required: [
 		"appid",
+		"has_community_visible_stats",
+		"img_icon_url",
+		"img_logo_url",
 		"name",
 		"playtime_2weeks",
 		"playtime_forever",
-		"img_icon_url",
-		"img_logo_url",
-		"has_community_visible_stats",
 	],
-};
+	$schema: "http://json-schema.org/draft-07/schema#",
+	$id: "RecentlyPlayedGame",
+} as const;
+
 export const GetRecentlyPlayedGamesResponse = {
-	see: "https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames",
 	description: "Response containing recently played games for a user.",
-	$id: "GetRecentlyPlayedGamesResponse",
 	type: "object",
 	properties: {
 		response: {
-			minimum: 0,
-			description: "The total number of games.",
 			type: "object",
 			properties: {
 				total_count: {
@@ -75,7 +89,6 @@ export const GetRecentlyPlayedGamesResponse = {
 					type: "array",
 					items: {
 						description: "Information about a recently played game.",
-						$id: "RecentlyPlayedGame",
 						type: "object",
 						properties: {
 							appid: {
@@ -112,20 +125,25 @@ export const GetRecentlyPlayedGamesResponse = {
 								type: "boolean",
 							},
 						},
+						additionalProperties: false,
 						required: [
 							"appid",
+							"has_community_visible_stats",
+							"img_icon_url",
+							"img_logo_url",
 							"name",
 							"playtime_2weeks",
 							"playtime_forever",
-							"img_icon_url",
-							"img_logo_url",
-							"has_community_visible_stats",
 						],
 					},
 				},
 			},
-			required: ["total_count", "games"],
+			additionalProperties: false,
+			required: ["games", "total_count"],
 		},
 	},
+	additionalProperties: false,
 	required: ["response"],
-};
+	$schema: "http://json-schema.org/draft-07/schema#",
+	$id: "GetRecentlyPlayedGamesResponse",
+} as const;

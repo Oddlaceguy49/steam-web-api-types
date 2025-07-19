@@ -61,14 +61,12 @@ export interface RecentlyPlayedGame {
  * @description Response containing recently played games for a user.
  */
 export interface GetRecentlyPlayedGamesResponse {
-	response: GetRecentlyPlayedGamesResponse_properties_response;
-}
-
-export interface GetRecentlyPlayedGamesResponse_properties_response {
-	/**
-	 * @minimum 0
-	 * @description The total number of games.
-	 */
-	total_count: number;
-	games: RecentlyPlayedGame[];
+	response: {
+		/**
+		 * @minimum 0
+		 * @description The total number of games.
+		 */
+		total_count: number;
+		games: RecentlyPlayedGame[];
+	};
 }
