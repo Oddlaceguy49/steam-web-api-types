@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@oddlaceguy49/steam-web-api-types.svg)](https://www.npmjs.com/package/@oddlaceguy49/steam-web-api-types)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive set of TypeScript type definitions for the **raw JSON responses** from the official Steam Web API, with optional, ready-to-use Zod schemas for runtime validation.
+A comprehensive set of TypeScript type definitions for the **raw JSON responses** from the official Steam Web API, with optional, ready-to-use schemas for multiple validation libraries.
 
 This package provides accurate, up-to-date interfaces for developers making direct `fetch` calls to `api.steampowered.com`, enabling full type safety and editor autocomplete for your backend projects.
 
@@ -11,15 +11,64 @@ This package provides accurate, up-to-date interfaces for developers making dire
 
 Most existing `@types` packages for Steam are for specific Node.js wrapper libraries (like `steamapi` or `steam-user`), which transform the raw API response into a different format. This package is for developers who are interacting with the **raw, untransformed API** directly.
 
-It provides both pure TypeScript types for static analysis and optional Zod schemas for robust runtime validation.
+It provides both pure TypeScript types for static analysis and optional schemas for robust runtime validation using your favorite library.
 
 ## Features
 
 -   **Types by Default:** The main entry point provides pure TypeScript types with zero runtime dependencies.
--   **Optional Zod Schemas:** Includes a secondary `/zod` entry point with pre-built Zod schemas for easy and safe data parsing.
+-   **Optional Schemas:** Includes secondary entry points for multiple popular validation libraries.
 -   **Accurate:** Modeled directly from the official [Steam Web API documentation](https://partner.steamgames.com/doc/webapi).
 -   **Organized:** Types and schemas are split into files that mirror the Steam API services (e.g., `ISteamUser.ts`).
--   **Lightweight:** The default import path has zero dependencies. Zod is an optional peer dependency.
+-   **Lightweight:** The default import path has zero dependencies. Validation libraries are optional peer dependencies.
+
+### Supported Schemas
+
+-   [x] ArkType
+-   [x] Effect
+-   [ ] io-ts
+-   [ ] Javascript Transform
+-   [x] JSON Schema
+-   [x] TypeBox
+-   [ ] Typescript Transform
+-   [x] Valibot
+-   [ ] Value Transform
+-   [x] Yup
+-   [ ] Yrel
+-   [x] Zod
+
+### Implemented Steam Web API Modules
+
+-   [ ] IBroadcastService
+-   [ ] ICloudService
+-   [ ] ICheatReportingService
+-   [ ] IEconMarketService
+-   [ ] IEconService
+-   [ ] IGameInventory
+-   [ ] IGameNotificationsService
+-   [ ] IGameServersService
+-   [ ] IInventoryService
+-   [ ] ILobbyMatchmakingService
+-   [x] IPlayerService
+-   [ ] IPublishedFileService
+-   [ ] ISiteLicenseService
+-   [ ] ISteamApps
+-   [ ] ISteamCDN
+-   [ ] ISteamDirectory
+-   [ ] ISteamEconomy
+-   [ ] ISteamGameServerStats
+-   [ ] ISteamLeaderboards
+-   [ ] ISteamMicroTxn
+-   [ ] ISteamMicroTxnSandbox
+-   [x] ISteamNews
+-   [ ] ISteamRemoteStorage
+-   [x] ISteamUser
+-   [x] ISteamUserAuth
+-   [ ] ISteamUserOAuth
+-   [ ] ISteamUserStats
+-   [ ] ISteamWebAPIUtil
+-   [ ] ISteamWebUserPresenceOAuth
+-   [ ] IStoreService
+-   [ ] IWorkshopService
 
 ## Installation
 
@@ -57,18 +106,24 @@ async function getSummaries(apiKey: string, steamids: string[]) {
 }
 ```
 
-## Advanced Usage with Zod Schemas (Recommended)
+## Advanced Usage with Schemas (Recommended)
 
-For robust runtime validation, this package provides an optional set of Zod schemas.
+For robust runtime validation, this package provides optional sets of schemas for various libraries.
 
-**1. Install Zod as a dependency:**
+**1. Install your chosen library as a dependency:**
 
 ```bash
+# Example for Zod
 bun add zod
+
+# Example for TypeBox
+bun add typebox
 ```
 
-**2. Import schemas from the `/zod` entry point:**
-Notice the import path now includes `/zod`. This gives you access to the validation schemas.
+**2. Import schemas from the corresponding entry point:**
+Notice the import path now includes the library name (e.g., `/zod`, `/typebox`). This gives you access to the validation schemas.
+
+### Zod Example
 
 ```typescript
 import { GetPlayerSummariesResponseSchema } from "@oddlaceguy49/steam-web-api-types/zod";
@@ -106,15 +161,74 @@ async function getSummariesSafely(
 }
 ```
 
+### TypeBox Example
+
+```typescript
+import { Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
+import { GetPlayerSummariesResponseType } from "@oddlaceguy49/steam-web-api-types/typebox";
+import type { RawPlayerSummary } from "@oddlaceguy49/steam-web-api-types";
+
+async function getSummariesWithTypeBox(
+    apiKey: string,
+    steamids: string[]
+): Promise<RawPlayerSummary[] | null> {
+    const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamids.join(
+        ","
+    )}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+
+        const unknownData = await response.json();
+
+        // Use the imported TypeBox type to validate the data
+        if (!Value.Check(GetPlayerSummariesResponseType, unknownData)) {
+            console.error("Validation failed");
+            return null;
+        }
+
+        // unknownData is now validated and can be safely used
+        return unknownData.response.players;
+    } catch (error) {
+        console.error("Error fetching summaries:", error);
+        return null;
+    }
+}
+```
+
+## How Schemas Are Generated
+
+The validation schemas for this project are automatically generated from the base TypeScript types located in `src/types`. This ensures that the schemas stay in sync with the type definitions. The generation process uses a combination of tools:
+
+-   **[TypeBox Codegen](https://github.com/sinclairzx81/typebox-codegen)** is the primary tool used to generate schemas for most of the supported libraries, including:
+
+    -   TypeBox
+    -   Valibot
+    -   ArkType
+    -   Effect
+    -   JSON Schema
+
+-   **Zod** schemas are generated using a hybrid approach:
+
+    -   The main validation schemas are generated using **[ts-to-zod](https://github.com/fabien0102/ts-to-zod)**.
+    -   The secondary "details" schemas (which expose internal properties) are generated using **TypeBox Codegen**.
+
+-   **Yup** schemas are first generated with **TypeBox Codegen** and then programmatically modified to fix import statements, ensuring they are ready to use.
+
+This automated process is handled by the `scripts/generateSchemas.ts` file.
+
 ## Contributing
 
 Contributions are welcome! If you find a missing endpoint or an incorrect type/schema, please feel free to open an issue or submit a pull request on the [GitHub repository](https://github.com/Oddlaceguy49/steam-web-api-types).
 
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/add-ISteamNews`).
-3.  Add your new types to a file in `src/types/` and the corresponding Zod schemas to a file in `src/zod/`.
-4.  Export them from `src/index.ts` and `src/zod.ts` respectively.
-5.  Submit a pull request.
+The general workflow is:
+
+1.  Fork the repository and create a new branch.
+2.  Add or modify the base TypeScript types in the `src/types/` directory.
+3.  Run the generator script to update all schema packages: `bun run gen`.
+4.  Commit your changes and submit a pull request.
 
 ## License
 
