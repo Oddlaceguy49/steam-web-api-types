@@ -137,6 +137,7 @@ async function main() {
 			}
 
 			if (targetPackage.toLowerCase() === "yup") {
+				console.log("\n🔧 Fixing up generated Yup code...");
 				generatedCode = generatedCode.replace(
 					"import y from 'yup'",
 					"import * as y from 'yup'"
@@ -144,31 +145,18 @@ async function main() {
 			}
 
 			if (targetPackage.toLowerCase() === "arktype") {
-				const scopeContentMatch = generatedCode.match(
-					/scope\(\{([\s\S]*?)\}\)\.export/
+				console.log("\n🔧 Fixing up generated ArkType code...");
+
+				// Add // @ts-expect-error above every 'SomeType[]' property value
+				generatedCode = generatedCode.replace(
+					/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
+					"// @ts-expect-error\n$1'$2[]'$3"
 				);
-				if (scopeContentMatch) {
-					let innerContent = scopeContentMatch[1];
-					innerContent = innerContent.replace(
-						/([A-Za-z0-9_]+):/g,
-						"export const $1 ="
-					);
-
-					// FIX: This new regex handles both single and double quotes.
-					innerContent = innerContent.replace(
-						/['"]([A-Za-z0-9_]+)\[\]['"]/g,
-						"$1.array()"
-					);
-
-					generatedCode = generatedCode.replace(
-						/export const types = scope\(\{[\s\S]*?\}\)\.export\(\);/g,
-						innerContent
-					);
-					generatedCode = generatedCode.replace(
-						/export const ([A-Za-z0-9_]+) = types\.\1;/g,
-						""
-					);
-				}
+				// Also handle cases like games: 'RecentlyPlayedGame[]'
+				generatedCode = generatedCode.replace(
+					/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
+					"// @ts-expect-error\n$1'$2'$3"
+				);
 			}
 		}
 

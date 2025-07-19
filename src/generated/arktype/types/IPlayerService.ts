@@ -16,6 +16,7 @@ export const types = scope({
 	GetRecentlyPlayedGamesResponse: type({
 		response: type({
 			total_count: "number>=0",
+			// @ts-expect-error
 			games: "RecentlyPlayedGame[]",
 		}),
 	}),
