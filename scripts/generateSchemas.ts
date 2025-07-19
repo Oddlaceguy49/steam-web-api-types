@@ -5,6 +5,7 @@ import { glob } from "glob";
 import { generate as generateZod } from "ts-to-zod";
 
 const generators = {
+	types: "self",
 	typebox: Codegen.TypeScriptToTypeBox,
 	zod: "ts-to-zod",
 	valibot: Codegen.ModelToValibot,
@@ -26,7 +27,7 @@ async function generateFiles(baseOutputDir) {
 	}
 
 	generateIndexFile(baseOutputDir, generatedFiles);
-	generateExtrasFile(baseOutputDir, generatedFiles);
+	generateDetailsFile(baseOutputDir, generatedFiles);
 }
 
 async function generateIndexFile(
@@ -57,11 +58,11 @@ async function generateIndexFile(
 	console.log(`   -> ✅ Index file generated at ${indexFilePath}`);
 }
 
-async function generateExtrasFile(
+async function generateDetailsFile(
 	baseOutputDir: string,
 	generatedFiles: string[]
 ) {
-	let extrasContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
+	let detailsContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
 	for (const file of generatedFiles) {
 		const fileContent = await fs.readFile(file, "utf-8");
 		const exportRegex =
@@ -75,14 +76,14 @@ async function generateExtrasFile(
 				.relative(baseOutputDir, file)
 				.replace(/\\/g, "/")
 				.replace(/\.ts$/, "");
-			extrasContent += `export {\n\t${exportedNames.join(
+			detailsContent += `export {\n\t${exportedNames.join(
 				",\n\t"
 			)},\n} from "./${relativePath}";\n\n`;
 		}
 	}
-	const extrasFilePath = path.join(baseOutputDir, "details.ts");
-	await fs.writeFile(extrasFilePath, extrasContent);
-	console.log(`   -> ✅ Extras file generated at ${extrasFilePath}`);
+	const detailsFilePath = path.join(baseOutputDir, "details.ts");
+	await fs.writeFile(detailsFilePath, detailsContent);
+	console.log(`   -> ✅ Details file generated at ${detailsFilePath}`);
 }
 
 async function main() {
