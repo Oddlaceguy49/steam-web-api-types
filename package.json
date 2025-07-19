@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "// --- GENERATOR SCRIPTS ---": "",
     "gen-script": "bun run scripts/generateSchemas.ts",
+    "gen:types": "bun run gen-script types",
     "gen:zod": "bun run gen-script zod",
     "gen:typebox": "bun run gen-script typebox",
     "gen:valibot": "bun run gen-script valibot",
@@ -17,50 +18,74 @@
     "gen:jsonschema": "bun run gen-script jsonschema",
     "// --- MAIN BUILD SCRIPT ---": "",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "gen": "echo 'Running all schema generators...' && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:arktype && bun run gen:effect && bun run gen:jsonschema",
+    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:arktype && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
+    "@effect/schema": "^0.75.5",
     "@sinclair/typebox-codegen": "^0.11.1",
     "@types/bun": "^1.2.18",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.0.15",
+    "arktype": "^2.1.20",
     "bun-types": "^1.2.18",
+    "effect": "^3.16.16",
+    "fs-extra": "^11.3.0",
     "glob": "^11.0.3",
     "lefthook": "^1.12.2",
+    "ts-morph": "^26.0.0",
     "ts-to-zod": "^3.15.0",
+    "typebox": "^0.0.1",
     "typescript": "^5.8.3",
-    "ultracite": "^5.0.39"
+    "ultracite": "^5.0.46",
+    "valibot": "^1.1.0",
+    "yup": "^1.6.1",
+    "zod": "^4.0.5"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/generated/types/index.d.ts"
+    },
+    "./*": {
+      "types": "./dist/generated/types/*.d.ts"
     },
     "./zod": {
-      "import": "./dist/zod.js",
-      "types": "./dist/zod.d.ts"
+      "types": "./dist/generated/zod/index.d.ts"
+    },
+    "./zod/*": {
+      "types": "./dist/generated/zod/*.d.ts"
     },
     "./typebox": {
-      "import": "./dist/typebox.js",
-      "types": "./dist/typebox.d.ts"
+      "types": "./dist/generated/typebox/index.d.ts"
+    },
+    "./typebox/*": {
+      "types": "./dist/generated/typebox/*.d.ts"
     },
     "./valibot": {
-      "import": "./dist/valibot.js",
-      "types": "./dist/valibot.d.ts"
+      "types": "./dist/generated/valibot/index.d.ts"
+    },
+    "./valibot/*": {
+      "types": "./dist/generated/valibot/*.d.ts"
     },
     "./yup": {
-      "import": "./dist/yup.js",
-      "types": "./dist/yup.d.ts"
+      "types": "./dist/generated/yup/index.d.ts"
+    },
+    "./yup/*": {
+      "types": "./dist/generated/yup/*.d.ts"
     },
     "./arktype": {
-      "import": "./dist/arktype.js",
-      "types": "./dist/arktype.d.ts"
+      "types": "./dist/generated/arktype/index.d.ts"
+    },
+    "./arktype/*": {
+      "types": "./dist/generated/arktype/*.d.ts"
     },
     "./effect": {
-      "import": "./dist/effect.js",
-      "types": "./dist/effect.d.ts"
-    }
+      "types": "./dist/generated/effect/index.d.ts"
+    },
+    "./effect/*": {
+      "types": "./dist/generated/effect/*.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "peerDependencies": {
     "@effect/schema": "^0.75.5",

@@ -9,8 +9,13 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types"],
-    "types": ["bun", "node"]
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "types": [
+      "bun",
+      "node"
+    ]
   },
   "include": [
     "src"

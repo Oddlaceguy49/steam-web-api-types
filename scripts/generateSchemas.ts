@@ -2,16 +2,17 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as Codegen from "@sinclair/typebox-codegen";
 import { glob } from "glob";
+import { type InterfaceDeclaration, Node, Project } from "ts-morph";
 
 const generators = {
-	types: Codegen.ModelToTypeScript,
-	typebox: Codegen.ModelToTypeBox,
+	typebox: Codegen.TypeScriptToTypeBox,
 	zod: Codegen.ModelToZod,
 	valibot: Codegen.ModelToValibot,
 	yup: Codegen.ModelToYup,
 	arktype: Codegen.ModelToArkType,
 	effect: Codegen.ModelToEffect,
 	jsonschema: Codegen.ModelToJsonSchema,
+	types: "types",
 };
 
 async function generateBarrelFile(
@@ -52,9 +53,9 @@ async function generateFiles(baseOutputDir: string, schemaOutputDir: string) {
 	}
 
 	const indexExportRegex =
-		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*=/g;
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
 	const detailsExportRegex =
-		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*=/g;
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
 
 	await generateBarrelFile(
 		baseOutputDir,
@@ -104,33 +105,97 @@ async function main() {
 		await fs.mkdir(path.dirname(outputFile), { recursive: true });
 
 		const sourceText = await fs.readFile(inputFile, "utf-8");
-		let generatedCode: string;
+		let generatedCode: string = "";
 
 		const selectedGenerator = generators[targetPackage.toLowerCase()];
-		const model = Codegen.TypeScriptToModel.Generate(sourceText);
-		generatedCode = selectedGenerator.Generate(model);
+		if (targetPackage.toLowerCase() === "typebox") {
+			generatedCode = Codegen.TypeScriptToTypeBox.Generate(sourceText);
+		} else if (targetPackage.toLowerCase() === "types") {
+			const project = new Project();
 
-		if (targetPackage.toLowerCase() === "yup") {
-			console.log("\n🔧 Fixing up generated Yup code...");
-			generatedCode = generatedCode.replace(
-				"import y from 'yup'",
-				"import * as y from 'yup'"
+			// 1. FIX: Add the source file to the project from the text you already read.
+			// This returns a reference to the sourceFile object you can now manipulate.
+			const sourceFile = project.createSourceFile(
+				inputFile, // Provide a path for context
+				sourceText, // Provide the file content
+				{ overwrite: true } // Good practice
 			);
-		}
 
-		if (targetPackage.toLowerCase() === "arktype") {
-			console.log("\n🔧 Fixing up generated ArkType code...");
+			// 1. THE RECURSIVE STRATEGY: Create a "work queue".
+			// Initialize it with all the interfaces that exist in the file at the start.
+			const interfacesToProcess: InterfaceDeclaration[] =
+				sourceFile.getInterfaces();
 
-			// Add // @ts-expect-error above every 'SomeType[]' property value
-			generatedCode = generatedCode.replace(
-				/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
-				"// @ts-expect-error\n$1'$2[]'$3"
-			);
-			// Also handle cases like games: 'RecentlyPlayedGame[]'
-			generatedCode = generatedCode.replace(
-				/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
-				"// @ts-expect-error\n$1'$2'$3"
-			);
+			// 2. Loop as long as there are interfaces in our queue to check.
+			// This loop will process the original interfaces AND any new ones we create.
+			while (interfacesToProcess.length > 0) {
+				// Get the next interface to work on. .shift() treats the array like a queue (FIFO).
+				const currentInterface = interfacesToProcess.shift();
+
+				// Safety check in case of an empty element
+				if (!currentInterface) continue;
+
+				const parentInterfaceName = currentInterface.getName();
+
+				// Iterate over every property within the CURRENT interface.
+				for (const prop of currentInterface.getProperties()) {
+					const propName = prop.getName();
+					const typeNode = prop.getTypeNode();
+
+					// Check if this property's type is an inline object literal (`{ ... }`).
+					if (typeNode && Node.isTypeLiteral(typeNode)) {
+						const newInterfaceName = `${parentInterfaceName}_properties_${propName}`;
+
+						// Create the new interface and add it to the source file.
+						const newInterface = sourceFile.addInterface({
+							name: newInterfaceName,
+							isExported: true,
+							properties: typeNode
+								.getMembers()
+								// Ensure we only process property signatures, not method signatures etc.
+								.filter(Node.isPropertySignature)
+								.map((member) => member.getStructure()),
+						});
+
+						// 3. THE CRITICAL STEP: Add the newly created interface to our work queue.
+						// The loop will now process this new interface on a future iteration to see
+						// if IT also has any inline objects that need extracting.
+						interfacesToProcess.push(newInterface);
+
+						// Update the original property to reference the new interface by name.
+						prop.setType(newInterfaceName);
+					}
+				}
+			}
+
+			// 4. Get the final, fully-transformed text from the modified AST.
+			generatedCode = sourceFile.getFullText();
+		} else {
+			const model = Codegen.TypeScriptToModel.Generate(sourceText);
+			generatedCode = selectedGenerator.Generate(model);
+
+			if (targetPackage.toLowerCase() === "yup") {
+				console.log("\n🔧 Fixing up generated Yup code...");
+				generatedCode = generatedCode.replace(
+					"import y from 'yup'",
+					"import * as y from 'yup'"
+				);
+			}
+
+			if (targetPackage.toLowerCase() === "arktype") {
+				console.log("\n🔧 Fixing up generated ArkType code...");
+
+				// Add // @ts-expect-error above every 'SomeType[]' property value
+				generatedCode = generatedCode.replace(
+					/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
+					"// @ts-expect-error\n$1'$2[]'$3"
+				);
+				// Also handle cases like games: 'RecentlyPlayedGame[]'
+				generatedCode = generatedCode.replace(
+					/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
+					"// @ts-expect-error\n$1'$2'$3"
+				);
+			}
 		}
 
 		const combinedOutput = `// THIS FILE IS AUTO-GENERATED FOR ${targetPackage.toUpperCase()}. DO NOT EDIT.\n\n${generatedCode}`;
