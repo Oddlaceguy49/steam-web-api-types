@@ -2,11 +2,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as Codegen from "@sinclair/typebox-codegen";
 import { glob } from "glob";
-import { generate as generateZod } from "ts-to-zod";
 
 const generators = {
-	typebox: Codegen.TypeScriptToTypeBox,
-	zod: "ts-to-zod",
+	types: Codegen.ModelToTypeScript,
+	typebox: Codegen.ModelToTypeBox,
+	zod: Codegen.ModelToZod,
 	valibot: Codegen.ModelToValibot,
 	yup: Codegen.ModelToYup,
 	arktype: Codegen.ModelToArkType,
@@ -41,11 +41,10 @@ async function generateBarrelFile(
 	console.log(`   -> ✅ ${fileName} generated at ${filePath}`);
 }
 
-async function generateFiles(baseOutputDir) {
-	const schemaDir = path.join(baseOutputDir, "types");
-	console.log(`\n📦 Generating barrel files for ${baseOutputDir}...`);
-	const globPath = `${schemaDir.replace(/\\/g, "/")}/**/*.ts`;
-	const generatedFiles = await glob(globPath, { ignore: "**/index.ts" });
+async function generateFiles(baseOutputDir: string, schemaOutputDir: string) {
+	console.log(`\n📦 Generating barrel files for ${schemaOutputDir}...`);
+	const globPath = `${schemaOutputDir.replace(/\\/g, "/")}/**/*.ts`;
+	const generatedFiles = await glob(globPath);
 
 	if (generatedFiles.length === 0) {
 		console.log(`   -> No files found in ${globPath} to index. Skipping.`);
@@ -107,43 +106,31 @@ async function main() {
 		const sourceText = await fs.readFile(inputFile, "utf-8");
 		let generatedCode: string;
 
-		if (targetPackage.toLowerCase() === "zod") {
-			const { getZodSchemasFile } = generateZod({
-				sourceText,
-				keepComments: true,
-			});
-			generatedCode = getZodSchemasFile(inputFile);
-		} else {
-			const selectedGenerator = generators[targetPackage.toLowerCase()];
-			if (targetPackage.toLowerCase() === "typebox") {
-				generatedCode = selectedGenerator.Generate(sourceText);
-			} else {
-				const model = Codegen.TypeScriptToModel.Generate(sourceText);
-				generatedCode = selectedGenerator.Generate(model);
-			}
+		const selectedGenerator = generators[targetPackage.toLowerCase()];
+		const model = Codegen.TypeScriptToModel.Generate(sourceText);
+		generatedCode = selectedGenerator.Generate(model);
 
-			if (targetPackage.toLowerCase() === "yup") {
-				console.log("\n🔧 Fixing up generated Yup code...");
-				generatedCode = generatedCode.replace(
-					"import y from 'yup'",
-					"import * as y from 'yup'"
-				);
-			}
+		if (targetPackage.toLowerCase() === "yup") {
+			console.log("\n🔧 Fixing up generated Yup code...");
+			generatedCode = generatedCode.replace(
+				"import y from 'yup'",
+				"import * as y from 'yup'"
+			);
+		}
 
-			if (targetPackage.toLowerCase() === "arktype") {
-				console.log("\n🔧 Fixing up generated ArkType code...");
+		if (targetPackage.toLowerCase() === "arktype") {
+			console.log("\n🔧 Fixing up generated ArkType code...");
 
-				// Add // @ts-expect-error above every 'SomeType[]' property value
-				generatedCode = generatedCode.replace(
-					/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
-					"// @ts-expect-error\n$1'$2[]'$3"
-				);
-				// Also handle cases like games: 'RecentlyPlayedGame[]'
-				generatedCode = generatedCode.replace(
-					/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
-					"// @ts-expect-error\n$1'$2'$3"
-				);
-			}
+			// Add // @ts-expect-error above every 'SomeType[]' property value
+			generatedCode = generatedCode.replace(
+				/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
+				"// @ts-expect-error\n$1'$2[]'$3"
+			);
+			// Also handle cases like games: 'RecentlyPlayedGame[]'
+			generatedCode = generatedCode.replace(
+				/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
+				"// @ts-expect-error\n$1'$2'$3"
+			);
 		}
 
 		const combinedOutput = `// THIS FILE IS AUTO-GENERATED FOR ${targetPackage.toUpperCase()}. DO NOT EDIT.\n\n${generatedCode}`;
@@ -151,7 +138,7 @@ async function main() {
 	}
 	console.log(`\n✅ Schema file generation for ${targetPackage} complete!`);
 	console.log(`   Output directory: ${schemaOutputDir}`);
-	await generateFiles(baseOutputDir);
+	await generateFiles(baseOutputDir, schemaOutputDir);
 }
 
 main().catch((error) => {

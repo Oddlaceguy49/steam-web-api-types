@@ -202,20 +202,23 @@ async function getSummariesWithTypeBox(
 
 The validation schemas for this project are automatically generated from the base TypeScript types located in `src/types`. This ensures that the schemas stay in sync with the type definitions. The generation process uses a combination of tools:
 
--   **[TypeBox Codegen](https://github.com/sinclairzx81/typebox-codegen)** is the primary tool used to generate schemas for most of the supported libraries, including:
+-   **[TypeBox Codegen](https://github.com/sinclairzx81/typebox-codegen)** is the primary tool used to generate schemas for ~~most~~ all of the supported libraries, including:
 
+    -   Zod
     -   TypeBox
     -   Valibot
-    -   ArkType
     -   Effect
     -   JSON Schema
+    -   Yup
+    -   ArkType
 
--   **Zod** schemas are generated using a hybrid approach:
+    ***
 
-    -   The main validation schemas are generated using **[ts-to-zod](https://github.com/fabien0102/ts-to-zod)**.
-    -   The secondary "details" schemas (which expose internal properties) are generated using **TypeBox Codegen**.
+    -   **Yup** schemas are first generated with **TypeBox Codegen** and then programmatically modified to fix import statements, ensuring they are ready to use.
 
--   **Yup** schemas are first generated with **TypeBox Codegen** and then programmatically modified to fix import statements, ensuring they are ready to use.
+    -   **ArkType** schemas are also generated with **TypeBox Codegen**, but then have an // @ts-expect-error added to them.
+
+    -   **TypeBox** schemas are notably generated using `Codegen.ModelToTypeBox` instead of `Codegen.TypescriptToTypeBox`.
 
 This automated process is handled by the `scripts/generateSchemas.ts` file.
 
