@@ -1,4 +1,4 @@
-// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.
+// THIS FILE IS AUTO-GENERATED FOR BARREL FILE. DO NOT EDIT.
 
 export { AuthenticateUserTicketResponse_properties_response_properties_error } from "./types/ISteamUserAuth";
 

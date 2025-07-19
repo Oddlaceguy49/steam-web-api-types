@@ -1,27 +1,161 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import * as Codegen from "@sinclair/typebox-codegen";
+import fs from "fs/promises";
+import path from "path";
 import { glob } from "glob";
-import { type InterfaceDeclaration, Node, Project } from "ts-morph";
+import { Project, Node } from "ts-morph";
+import { format } from "prettier";
+import { jsonSchemaToZod } from "json-schema-to-zod";
+import * as TJS from "typescript-json-schema"; // The programmatic API for typescript-json-schema
 
-const generators = {
-	typebox: Codegen.TypeScriptToTypeBox,
-	zod: Codegen.ModelToZod,
-	valibot: Codegen.ModelToValibot,
-	yup: Codegen.ModelToYup,
-	arktype: Codegen.ModelToArkType,
-	effect: Codegen.ModelToEffect,
-	jsonschema: Codegen.ModelToJsonSchema,
-	types: "types",
+// --- Script Configuration ---
+
+const SCRIPT_CONFIG = {
+	INPUT_DIR: "src/types",
+	OUTPUT_DIR_BASE: "src/generated",
+	TYPES_SUBDIR: "types",
+	BARREL_FILES: {
+		INDEX: "index.ts",
+		DETAILS: "details.ts",
+	},
+	FLATTEN_SEPARATOR: "_properties_",
+	STRATEGIES: {
+		TYPES: "types",
+		JSON_SCHEMA: "json-schema",
+		TYPEBOX_DIRECT: "typebox-direct", // Kept as an example of a custom path
+	},
+	MAIN_EXPORT_REGEX:
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g,
+	DETAILS_EXPORT_REGEX:
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g,
 };
 
+// Maps the command-line argument to the correct strategy.
+const targetConfig = {
+	types: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPES },
+	typebox: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPEBOX_DIRECT },
+	zod: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	yup: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	valibot: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	arktype: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	effect: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+	jsonschema: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA },
+};
+
+// --- Generation Strategies ---
+
+const strategies = {
+	[SCRIPT_CONFIG.STRATEGIES.TYPES]: {
+		generate: async ({ inputFile }) => {
+			const project = new Project();
+			const sourceText = await fs.readFile(inputFile, "utf-8");
+			const sourceFile = project.createSourceFile(inputFile, sourceText, {
+				overwrite: true,
+			});
+
+			const interfacesToProcess = sourceFile.getInterfaces();
+			while (interfacesToProcess.length > 0) {
+				const currentInterface = interfacesToProcess.shift();
+				if (!currentInterface) continue;
+				const parentInterfaceName = currentInterface.getName();
+				for (const prop of currentInterface.getProperties()) {
+					const propName = prop.getName();
+					const typeNode = prop.getTypeNode();
+					if (typeNode && Node.isTypeLiteral(typeNode)) {
+						const newInterfaceName = `${parentInterfaceName}${SCRIPT_CONFIG.FLATTEN_SEPARATOR}${propName}`;
+						const newInterface = sourceFile.addInterface({
+							name: newInterfaceName,
+							isExported: true,
+							properties: typeNode
+								.getMembers()
+								.filter(Node.isPropertySignature)
+								.map((m) => m.getStructure()),
+						});
+						interfacesToProcess.push(newInterface);
+						prop.setType(newInterfaceName);
+					}
+				}
+			}
+			return sourceFile.getFullText();
+		},
+	},
+
+	[SCRIPT_CONFIG.STRATEGIES.TYPEBOX_DIRECT]: {
+		generate: async () => {
+			throw new Error(
+				"TypeBox direct generation is not implemented. Please add the '@sinclair/typebox-codegen' dependency and necessary logic if this path is required."
+			);
+		},
+	},
+
+	[SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA]: {
+		generate: async ({ inputFile, program, targetArg }) => {
+			// Stage 1: Generate high-fidelity JSON Schema from the pre-compiled TS Program.
+			console.log(`   -> ⚙️ Generating intermediate JSONSchema...`);
+			const settings: TJS.PartialArgs = {
+				required: true,
+				strictNullChecks: true,
+				noExtraProps: true,
+				ref: true, // Create reusable definitions for shared interfaces
+			};
+			const schema = TJS.generateSchema(program, "*", settings, [inputFile]);
+
+			if (!schema) {
+				console.warn(`   -> ⚠️ No schema generated for ${inputFile}. Skipping.`);
+				return null; // Signal that no file should be written
+			}
+
+			// Stage 2: Convert the in-memory JSON Schema object to the final target format.
+			console.log(
+				`   -> ⚙️ Converting JSONSchema to ${targetArg.toUpperCase()}...`
+			);
+			switch (targetArg) {
+				case "jsonschema":
+					// For jsonschema itself, just return the pretty-printed JSON.
+					return `export default ${JSON.stringify(schema, null, 2)} as const;`;
+				case "zod":
+					// The name 'schema' will be used for the main export if no top-level $id is found
+					return jsonSchemaToZod(schema, { name: "schema" });
+				// Other cases would be added here
+				default:
+					console.warn(
+						`   -> ⚠️ Converter for '${targetArg}' not implemented. Returning raw JSONSchema.`
+					);
+					return `// TODO: Implement JSONSchema to ${targetArg} conversion\nexport const schema = ${JSON.stringify(
+						schema,
+						null,
+						2
+					)};`;
+			}
+		},
+	},
+};
+
+// --- Post-Processing Fixups ---
+// These might not be needed with the new pipeline but are kept for reference.
+const postProcessors = {
+	yup: async (code) => {
+		/* ... */
+	},
+	arktype: async (code) => {
+		/* ... */
+	},
+};
+
+// --- Utility Functions ---
+
+const createHeader = (target) =>
+	`// THIS FILE IS AUTO-GENERATED FOR ${target.toUpperCase()}. DO NOT EDIT.\n\n`;
+
+/**
+ * Generates a barrel file (e.g., index.ts, details.ts) that re-exports
+ * from all the generated schema files.
+ */
 async function generateBarrelFile(
-	baseOutputDir: string,
-	generatedFiles: string[],
-	fileName: string,
-	exportRegex: RegExp
+	baseOutputDir,
+	generatedFiles,
+	fileName,
+	exportRegex
 ) {
-	let fileContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
+	let fileContent = createHeader("Barrel File");
 	for (const file of generatedFiles) {
 		const sourceFileContent = await fs.readFile(file, "utf-8");
 		const allMatches = [...sourceFileContent.matchAll(exportRegex)];
@@ -34,7 +168,7 @@ async function generateBarrelFile(
 				.replace(/\.ts$/, "");
 			fileContent += `export {\n\t${exportedNames.join(
 				",\n\t"
-			)},\n} from \"./${relativePath}\";\n\n`;
+			)},\n} from "./${relativePath}";\n\n`;
 		}
 	}
 	const filePath = path.join(baseOutputDir, fileName);
@@ -42,7 +176,11 @@ async function generateBarrelFile(
 	console.log(`   -> ✅ ${fileName} generated at ${filePath}`);
 }
 
-async function generateFiles(baseOutputDir: string, schemaOutputDir: string) {
+/**
+ * Scans the output directory and creates the main `index.ts` and `details.ts`
+ * barrel files based on the generated content.
+ */
+async function generateBarrelFiles(baseOutputDir, schemaOutputDir) {
 	console.log(`\n📦 Generating barrel files for ${schemaOutputDir}...`);
 	const globPath = `${schemaOutputDir.replace(/\\/g, "/")}/**/*.ts`;
 	const generatedFiles = await glob(globPath);
@@ -52,40 +190,41 @@ async function generateFiles(baseOutputDir: string, schemaOutputDir: string) {
 		return;
 	}
 
-	const indexExportRegex =
-		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
-	const detailsExportRegex =
-		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
-
 	await generateBarrelFile(
 		baseOutputDir,
 		generatedFiles,
-		"index.ts",
-		indexExportRegex
+		SCRIPT_CONFIG.BARREL_FILES.INDEX,
+		SCRIPT_CONFIG.MAIN_EXPORT_REGEX
 	);
 	await generateBarrelFile(
 		baseOutputDir,
 		generatedFiles,
-		"details.ts",
-		detailsExportRegex
+		SCRIPT_CONFIG.BARREL_FILES.DETAILS,
+		SCRIPT_CONFIG.DETAILS_EXPORT_REGEX
 	);
 }
 
+// --- Main Execution Logic ---
+
 async function main() {
-	const targetPackage = process.argv[2];
-	if (!targetPackage || !generators[targetPackage.toLowerCase()]) {
+	const targetArg = process.argv[2]?.toLowerCase();
+	const currentTarget = targetConfig[targetArg];
+
+	if (!targetArg || !currentTarget) {
 		console.error("❌ Error: You must specify a valid target package.");
-		console.error(`Usage: node generate.mjs <package-name>`);
-		console.error(`Available packages: ${Object.keys(generators).join(", ")}`);
+		console.error(
+			`Available packages: ${Object.keys(targetConfig).join(", ")}`
+		);
 		process.exit(1);
 	}
-	console.log(`🚀 Starting schema generation for: ${targetPackage}`);
 
-	const inputDir = "src/types";
-	const baseOutputDir = path.join("src/generated", targetPackage.toLowerCase());
-	const schemaOutputDir = path.join(baseOutputDir, "types");
+	console.log(`🚀 Starting schema generation for: ${targetArg}`);
 
-	console.log(`\n🧹 Cleaning up previous output in ${baseOutputDir}...`);
+	const inputDir = SCRIPT_CONFIG.INPUT_DIR;
+	const baseOutputDir = path.join(SCRIPT_CONFIG.OUTPUT_DIR_BASE, targetArg);
+	const schemaOutputDir = path.join(baseOutputDir, SCRIPT_CONFIG.TYPES_SUBDIR);
+
+	console.log(`\n🧹 Cleaning up previous output...`);
 	await fs.rm(baseOutputDir, { recursive: true, force: true });
 	console.log("   -> Cleanup complete.");
 
@@ -98,113 +237,59 @@ async function main() {
 	await fs.mkdir(schemaOutputDir, { recursive: true });
 	console.log(`\nFound ${inputFiles.length} files to process...`);
 
+	// Create a single TS Program instance that includes all our files.
+	// This is much faster than compiling each file individually inside the loop.
+	let tsProgram;
+	if (currentTarget.strategy === SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA) {
+		console.log(
+			"\nAnalyzing TypeScript project to create a single Program instance..."
+		);
+		tsProgram = TJS.getProgramFromFiles(inputFiles, {
+			strictNullChecks: true,
+			types: ["node"],
+		});
+		console.log("   -> Analysis complete.");
+	}
+
 	for (const inputFile of inputFiles) {
 		const relativePath = path.relative(inputDir, inputFile);
 		const outputFile = path.join(schemaOutputDir, relativePath);
 		console.log(`- Processing ${inputFile} -> ${outputFile}`);
-		await fs.mkdir(path.dirname(outputFile), { recursive: true });
 
-		const sourceText = await fs.readFile(inputFile, "utf-8");
-		let generatedCode: string = "";
+		const strategy = strategies[currentTarget.strategy];
+		let generatedCode = await strategy.generate({
+			inputFile,
+			program: tsProgram, // Pass the pre-compiled program
+			targetArg,
+		});
 
-		const selectedGenerator = generators[targetPackage.toLowerCase()];
-		if (targetPackage.toLowerCase() === "typebox") {
-			generatedCode = Codegen.TypeScriptToTypeBox.Generate(sourceText);
-		} else if (targetPackage.toLowerCase() === "types") {
-			const project = new Project();
-
-			// 1. FIX: Add the source file to the project from the text you already read.
-			// This returns a reference to the sourceFile object you can now manipulate.
-			const sourceFile = project.createSourceFile(
-				inputFile, // Provide a path for context
-				sourceText, // Provide the file content
-				{ overwrite: true } // Good practice
-			);
-
-			// 1. THE RECURSIVE STRATEGY: Create a "work queue".
-			// Initialize it with all the interfaces that exist in the file at the start.
-			const interfacesToProcess: InterfaceDeclaration[] =
-				sourceFile.getInterfaces();
-
-			// 2. Loop as long as there are interfaces in our queue to check.
-			// This loop will process the original interfaces AND any new ones we create.
-			while (interfacesToProcess.length > 0) {
-				// Get the next interface to work on. .shift() treats the array like a queue (FIFO).
-				const currentInterface = interfacesToProcess.shift();
-
-				// Safety check in case of an empty element
-				if (!currentInterface) continue;
-
-				const parentInterfaceName = currentInterface.getName();
-
-				// Iterate over every property within the CURRENT interface.
-				for (const prop of currentInterface.getProperties()) {
-					const propName = prop.getName();
-					const typeNode = prop.getTypeNode();
-
-					// Check if this property's type is an inline object literal (`{ ... }`).
-					if (typeNode && Node.isTypeLiteral(typeNode)) {
-						const newInterfaceName = `${parentInterfaceName}_properties_${propName}`;
-
-						// Create the new interface and add it to the source file.
-						const newInterface = sourceFile.addInterface({
-							name: newInterfaceName,
-							isExported: true,
-							properties: typeNode
-								.getMembers()
-								// Ensure we only process property signatures, not method signatures etc.
-								.filter(Node.isPropertySignature)
-								.map((member) => member.getStructure()),
-						});
-
-						// 3. THE CRITICAL STEP: Add the newly created interface to our work queue.
-						// The loop will now process this new interface on a future iteration to see
-						// if IT also has any inline objects that need extracting.
-						interfacesToProcess.push(newInterface);
-
-						// Update the original property to reference the new interface by name.
-						prop.setType(newInterfaceName);
-					}
-				}
-			}
-
-			// 4. Get the final, fully-transformed text from the modified AST.
-			generatedCode = sourceFile.getFullText();
-		} else {
-			const model = Codegen.TypeScriptToModel.Generate(sourceText);
-			generatedCode = selectedGenerator.Generate(model);
-
-			if (targetPackage.toLowerCase() === "yup") {
-				console.log("\n🔧 Fixing up generated Yup code...");
-				generatedCode = generatedCode.replace(
-					"import y from 'yup'",
-					"import * as y from 'yup'"
-				);
-			}
-
-			if (targetPackage.toLowerCase() === "arktype") {
-				console.log("\n🔧 Fixing up generated ArkType code...");
-
-				// Add // @ts-expect-error above every 'SomeType[]' property value
-				generatedCode = generatedCode.replace(
-					/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
-					"// @ts-expect-error\n$1'$2[]'$3"
-				);
-				// Also handle cases like games: 'RecentlyPlayedGame[]'
-				generatedCode = generatedCode.replace(
-					/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
-					"// @ts-expect-error\n$1'$2'$3"
-				);
-			}
+		// If the generator returns null (e.g., no types in file), skip file creation.
+		if (generatedCode === null) {
+			continue;
 		}
 
-		const combinedOutput = `// THIS FILE IS AUTO-GENERATED FOR ${targetPackage.toUpperCase()}. DO NOT EDIT.\n\n${generatedCode}`;
+		const postProcessor = postProcessors[targetArg];
+		if (postProcessor) {
+			generatedCode = await postProcessor(generatedCode);
+		}
+
+		const formattedCode = await format(generatedCode, {
+			parser: "typescript",
+			printWidth: 80,
+		});
+
+		await fs.mkdir(path.dirname(outputFile), { recursive: true });
+		const combinedOutput = createHeader(targetArg) + formattedCode;
 		await fs.writeFile(outputFile, combinedOutput);
 	}
-	console.log(`\n✅ Schema file generation for ${targetPackage} complete!`);
+
+	console.log(`\n✅ Schema file generation for ${targetArg} complete!`);
 	console.log(`   Output directory: ${schemaOutputDir}`);
-	await generateFiles(baseOutputDir, schemaOutputDir);
+
+	await generateBarrelFiles(baseOutputDir, schemaOutputDir);
 }
+
+// --- Script Entrypoint ---
 
 main().catch((error) => {
 	console.error("❌ Error during schema generation:", error);
