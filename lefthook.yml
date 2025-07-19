@@ -42,7 +42,7 @@ pre-commit:
     #       runner: go run
     commands:
         generate:
-            glob: "src/types/**/*.ts"
+            glob: "src/types/**/*.ts, scripts/generateSchemas.ts"
             run: bun run gen
             stage_fixed: true
         check:
