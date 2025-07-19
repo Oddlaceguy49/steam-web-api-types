@@ -5,7 +5,6 @@ import { glob } from "glob";
 import { generate as generateZod } from "ts-to-zod";
 
 const generators = {
-	types: "self",
 	typebox: Codegen.TypeScriptToTypeBox,
 	zod: "ts-to-zod",
 	valibot: Codegen.ModelToValibot,
@@ -15,9 +14,36 @@ const generators = {
 	jsonschema: Codegen.ModelToJsonSchema,
 };
 
+async function generateBarrelFile(
+	baseOutputDir: string,
+	generatedFiles: string[],
+	fileName: string,
+	exportRegex: RegExp
+) {
+	let fileContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
+	for (const file of generatedFiles) {
+		const sourceFileContent = await fs.readFile(file, "utf-8");
+		const allMatches = [...sourceFileContent.matchAll(exportRegex)];
+		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
+
+		if (exportedNames.length > 0) {
+			const relativePath = path
+				.relative(baseOutputDir, file)
+				.replace(/\\/g, "/")
+				.replace(/\.ts$/, "");
+			fileContent += `export {\n\t${exportedNames.join(
+				",\n\t"
+			)},\n} from \"./${relativePath}\";\n\n`;
+		}
+	}
+	const filePath = path.join(baseOutputDir, fileName);
+	await fs.writeFile(filePath, fileContent);
+	console.log(`   -> ✅ ${fileName} generated at ${filePath}`);
+}
+
 async function generateFiles(baseOutputDir) {
 	const schemaDir = path.join(baseOutputDir, "types");
-	console.log(`\n📦 Generating index file for ${baseOutputDir}...`);
+	console.log(`\n📦 Generating barrel files for ${baseOutputDir}...`);
 	const globPath = `${schemaDir.replace(/\\/g, "/")}/**/*.ts`;
 	const generatedFiles = await glob(globPath, { ignore: "**/index.ts" });
 
@@ -26,64 +52,23 @@ async function generateFiles(baseOutputDir) {
 		return;
 	}
 
-	generateIndexFile(baseOutputDir, generatedFiles);
-	generateDetailsFile(baseOutputDir, generatedFiles);
-}
+	const indexExportRegex =
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*=/g;
+	const detailsExportRegex =
+		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*=/g;
 
-async function generateIndexFile(
-	baseOutputDir: string,
-	generatedFiles: string[]
-) {
-	let indexContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
-	for (const file of generatedFiles) {
-		const fileContent = await fs.readFile(file, "utf-8");
-		const exportRegex =
-			/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*=/g;
-		// /export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)\s*=/g;
-		const allMatches = [...fileContent.matchAll(exportRegex)];
-		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
-
-		if (exportedNames.length > 0) {
-			const relativePath = path
-				.relative(baseOutputDir, file)
-				.replace(/\\/g, "/")
-				.replace(/\.ts$/, "");
-			indexContent += `export {\n\t${exportedNames.join(
-				",\n\t"
-			)},\n} from "./${relativePath}";\n\n`;
-		}
-	}
-	const indexFilePath = path.join(baseOutputDir, "index.ts");
-	await fs.writeFile(indexFilePath, indexContent);
-	console.log(`   -> ✅ Index file generated at ${indexFilePath}`);
-}
-
-async function generateDetailsFile(
-	baseOutputDir: string,
-	generatedFiles: string[]
-) {
-	let detailsContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
-	for (const file of generatedFiles) {
-		const fileContent = await fs.readFile(file, "utf-8");
-		const exportRegex =
-			/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*=/g;
-		// /export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)\s*=/g;
-		const allMatches = [...fileContent.matchAll(exportRegex)];
-		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
-
-		if (exportedNames.length > 0) {
-			const relativePath = path
-				.relative(baseOutputDir, file)
-				.replace(/\\/g, "/")
-				.replace(/\.ts$/, "");
-			detailsContent += `export {\n\t${exportedNames.join(
-				",\n\t"
-			)},\n} from "./${relativePath}";\n\n`;
-		}
-	}
-	const detailsFilePath = path.join(baseOutputDir, "details.ts");
-	await fs.writeFile(detailsFilePath, detailsContent);
-	console.log(`   -> ✅ Details file generated at ${detailsFilePath}`);
+	await generateBarrelFile(
+		baseOutputDir,
+		generatedFiles,
+		"index.ts",
+		indexExportRegex
+	);
+	await generateBarrelFile(
+		baseOutputDir,
+		generatedFiles,
+		"details.ts",
+		detailsExportRegex
+	);
 }
 
 async function main() {
@@ -120,7 +105,7 @@ async function main() {
 		await fs.mkdir(path.dirname(outputFile), { recursive: true });
 
 		const sourceText = await fs.readFile(inputFile, "utf-8");
-		let generatedCode: any;
+		let generatedCode: string;
 
 		if (targetPackage.toLowerCase() === "zod") {
 			const { getZodSchemasFile } = generateZod({
