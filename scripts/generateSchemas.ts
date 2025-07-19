@@ -14,7 +14,7 @@ const generators = {
 	jsonschema: Codegen.ModelToJsonSchema,
 };
 
-async function generateIndexFile(baseOutputDir) {
+async function generateFiles(baseOutputDir) {
 	const schemaDir = path.join(baseOutputDir, "types");
 	console.log(`\n📦 Generating index file for ${baseOutputDir}...`);
 	const globPath = `${schemaDir.replace(/\\/g, "/")}/**/*.ts`;
@@ -25,11 +25,20 @@ async function generateIndexFile(baseOutputDir) {
 		return;
 	}
 
+	generateIndexFile(baseOutputDir, generatedFiles);
+	generateExtrasFile(baseOutputDir, generatedFiles);
+}
+
+async function generateIndexFile(
+	baseOutputDir: string,
+	generatedFiles: string[]
+) {
 	let indexContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
 	for (const file of generatedFiles) {
 		const fileContent = await fs.readFile(file, "utf-8");
 		const exportRegex =
 			/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*=/g;
+		// /export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)\s*=/g;
 		const allMatches = [...fileContent.matchAll(exportRegex)];
 		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
 
@@ -46,6 +55,34 @@ async function generateIndexFile(baseOutputDir) {
 	const indexFilePath = path.join(baseOutputDir, "index.ts");
 	await fs.writeFile(indexFilePath, indexContent);
 	console.log(`   -> ✅ Index file generated at ${indexFilePath}`);
+}
+
+async function generateExtrasFile(
+	baseOutputDir: string,
+	generatedFiles: string[]
+) {
+	let extrasContent = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT.\n\n`;
+	for (const file of generatedFiles) {
+		const fileContent = await fs.readFile(file, "utf-8");
+		const exportRegex =
+			/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*=/g;
+		// /export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)\s*=/g;
+		const allMatches = [...fileContent.matchAll(exportRegex)];
+		const exportedNames = [...new Set(allMatches.map((match) => match[1]))];
+
+		if (exportedNames.length > 0) {
+			const relativePath = path
+				.relative(baseOutputDir, file)
+				.replace(/\\/g, "/")
+				.replace(/\.ts$/, "");
+			extrasContent += `export {\n\t${exportedNames.join(
+				",\n\t"
+			)},\n} from "./${relativePath}";\n\n`;
+		}
+	}
+	const extrasFilePath = path.join(baseOutputDir, "details.ts");
+	await fs.writeFile(extrasFilePath, extrasContent);
+	console.log(`   -> ✅ Extras file generated at ${extrasFilePath}`);
 }
 
 async function main() {
@@ -140,7 +177,7 @@ async function main() {
 	}
 	console.log(`\n✅ Schema file generation for ${targetPackage} complete!`);
 	console.log(`   Output directory: ${schemaOutputDir}`);
-	await generateIndexFile(baseOutputDir);
+	await generateFiles(baseOutputDir);
 }
 
 main().catch((error) => {
