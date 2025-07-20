@@ -1,6 +1,6 @@
 {
   "name": "@oddlaceguy49/steam-web-api-types",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
   "module": "index.ts",
   "files": [
@@ -9,18 +9,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "// --- GENERATOR SCRIPTS ---": "",
+    "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })",
     "gen-script": "bun run scripts/generateSchemas.ts",
     "gen:types": "bun run gen-script types",
     "gen:zod": "bun run gen-script zod",
     "gen:typebox": "bun run gen-script typebox",
     "gen:valibot": "bun run gen-script valibot",
     "gen:yup": "bun run gen-script yup",
-    "gen:arktype": "bun run gen-script arktype",
     "gen:effect": "bun run gen-script effect",
     "gen:jsonschema": "bun run gen-script jsonschema",
     "// --- MAIN BUILD SCRIPT ---": "",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
+    "gen": "echo 'Running all schema generators...' && bun run pregen && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
@@ -29,7 +29,6 @@
     "@sinclair/typebox-codegen": "^0.11.1",
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.15",
-    "arktype": "^2.1.20",
     "bun-types": "^1.2.18",
     "effect": "^3.16.16",
     "fs-extra": "^11.3.0",
@@ -75,12 +74,6 @@
     "./yup/*/details": {
       "types": "./dist/yup/*/details.d.ts"
     },
-    "./arktype/*": {
-      "types": "./dist/arktype/*/index.d.ts"
-    },
-    "./arktype/*/details": {
-      "types": "./dist/arktype/*/details.d.ts"
-    },
     "./effect/*": {
       "types": "./dist/effect/*/index.d.ts"
     },
@@ -91,7 +84,6 @@
   },
   "peerDependencies": {
     "@effect/schema": "^0.75.5",
-    "arktype": "^2.1.20",
     "effect": "^3.16.16",
     "typebox": "^0.0.1",
     "valibot": "^1.1.0",
@@ -109,9 +101,6 @@
       "optional": true
     },
     "yup": {
-      "optional": true
-    },
-    "arktype": {
       "optional": true
     },
     "effect": {

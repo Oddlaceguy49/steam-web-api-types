@@ -91,7 +91,7 @@ yarn add --dev @oddlaceguy49/steam-web-api-types
 By default, you can import pure TypeScript interfaces for type casting and function signatures. This requires no additional libraries.
 
 ```typescript
-import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types";
+import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types/ISteamUser";
 
 async function getSummaries(apiKey: string, steamids: string[]) {
     const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamids.join(
@@ -126,9 +126,9 @@ Notice the import path now includes the library name (e.g., `/zod`, `/typebox`).
 ### Zod Example
 
 ```typescript
-import { GetPlayerSummariesResponseSchema } from "@oddlaceguy49/steam-web-api-types/zod";
+import { GetPlayerSummariesResponseSchema } from "@oddlaceguy49/steam-web-api-types/zod/ISteamUser";
 // You can still import the inferred type for function signatures if needed
-import type { RawPlayerSummary } from "@oddlaceguy49/steam-web-api-types";
+import type { PlayerSummary } from "@oddlaceguy49/steam-web-api-types/ISteamUser";
 
 async function getSummariesSafely(
     apiKey: string,
@@ -166,8 +166,8 @@ async function getSummariesSafely(
 ```typescript
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { GetPlayerSummariesResponseType } from "@oddlaceguy49/steam-web-api-types/typebox";
-import type { RawPlayerSummary } from "@oddlaceguy49/steam-web-api-types";
+import { GetPlayerSummariesResponseType } from "@oddlaceguy49/steam-web-api-types/typebox/ISteamUser";
+import type { PlayerSummary } from "@oddlaceguy49/steam-web-api-types/ISteamUser";
 
 async function getSummariesWithTypeBox(
     apiKey: string,
@@ -214,8 +214,6 @@ The validation schemas for this project are automatically generated from the bas
     ***
 
     -   **Yup** schemas are first generated with **TypeBox Codegen** and then programmatically modified to fix import statements, ensuring they are ready to use.
-
-    -   **ArkType** schemas are also generated with **TypeBox Codegen**, but then have an // @ts-expect-error added to them.
 
     -   **TypeBox** schemas are notably generated using `Codegen.ModelToTypeBox` instead of `Codegen.TypescriptToTypeBox`.
 
