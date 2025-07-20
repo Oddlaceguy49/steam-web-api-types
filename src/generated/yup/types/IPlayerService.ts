@@ -2,7 +2,7 @@
 
 import * as yup from "yup";
 
-export const GetRecentlyPlayedGamesRequestSchema = yup
+export const GetRecentlyPlayedGamesRequest = yup
 	.object({
 		steamid: yup
 			.string()
@@ -12,7 +12,11 @@ export const GetRecentlyPlayedGamesRequestSchema = yup
 	})
 	.required();
 
-export const RecentlyPlayedGameSchema = yup
+export type GetRecentlyPlayedGamesRequest = yup.InferType<
+	typeof GetRecentlyPlayedGamesRequest
+>;
+
+export const RecentlyPlayedGame = yup
 	.object({
 		appid: yup.number().min(1).required(),
 		name: yup.string().required(),
@@ -24,7 +28,9 @@ export const RecentlyPlayedGameSchema = yup
 	})
 	.required();
 
-export const GetRecentlyPlayedGamesResponseSchema = yup
+export type RecentlyPlayedGame = yup.InferType<typeof RecentlyPlayedGame>;
+
+export const GetRecentlyPlayedGamesResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -47,3 +53,7 @@ export const GetRecentlyPlayedGamesResponseSchema = yup
 			.required(),
 	})
 	.required();
+
+export type GetRecentlyPlayedGamesResponse = yup.InferType<
+	typeof GetRecentlyPlayedGamesResponse
+>;

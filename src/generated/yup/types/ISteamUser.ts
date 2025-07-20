@@ -2,7 +2,7 @@
 
 import * as yup from "yup";
 
-export const PlayerSummarySchema = yup
+export const PlayerSummary = yup
 	.object({
 		steamid: yup
 			.string()
@@ -26,7 +26,9 @@ export const PlayerSummarySchema = yup
 	})
 	.required();
 
-export const GetPlayerSummariesResponseSchema = yup
+export type PlayerSummary = yup.InferType<typeof PlayerSummary>;
+
+export const GetPlayerSummariesResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -61,7 +63,11 @@ export const GetPlayerSummariesResponseSchema = yup
 	})
 	.required();
 
-export const CheckAppOwnershipRequestSchema = yup
+export type GetPlayerSummariesResponse = yup.InferType<
+	typeof GetPlayerSummariesResponse
+>;
+
+export const CheckAppOwnershipRequest = yup
 	.object({
 		key: yup.string().required(),
 		steamid: yup
@@ -72,7 +78,11 @@ export const CheckAppOwnershipRequestSchema = yup
 	})
 	.required();
 
-export const CheckAppOwnershipResponseSchema = yup
+export type CheckAppOwnershipRequest = yup.InferType<
+	typeof CheckAppOwnershipRequest
+>;
+
+export const CheckAppOwnershipResponse = yup
 	.object({
 		appownership: yup
 			.object({
@@ -88,7 +98,11 @@ export const CheckAppOwnershipResponseSchema = yup
 	})
 	.required();
 
-export const GetDeletedSteamIDsRequestSchema = yup
+export type CheckAppOwnershipResponse = yup.InferType<
+	typeof CheckAppOwnershipResponse
+>;
+
+export const GetDeletedSteamIDsRequest = yup
 	.object({
 		key: yup.string().required(),
 		rowversion: yup
@@ -98,7 +112,11 @@ export const GetDeletedSteamIDsRequestSchema = yup
 	})
 	.required();
 
-export const DeletedSteamIDSchema = yup
+export type GetDeletedSteamIDsRequest = yup.InferType<
+	typeof GetDeletedSteamIDsRequest
+>;
+
+export const DeletedSteamID = yup
 	.object({
 		steamid: yup
 			.string()
@@ -107,7 +125,9 @@ export const DeletedSteamIDSchema = yup
 	})
 	.required();
 
-export const GetDeletedSteamIDsResponseSchema = yup
+export type DeletedSteamID = yup.InferType<typeof DeletedSteamID>;
+
+export const GetDeletedSteamIDsResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -131,7 +151,11 @@ export const GetDeletedSteamIDsResponseSchema = yup
 	})
 	.required();
 
-export const GetUserGroupListRequestSchema = yup
+export type GetDeletedSteamIDsResponse = yup.InferType<
+	typeof GetDeletedSteamIDsResponse
+>;
+
+export const GetUserGroupListRequest = yup
 	.object({
 		key: yup.string().required(),
 		steamid: yup
@@ -141,7 +165,11 @@ export const GetUserGroupListRequestSchema = yup
 	})
 	.required();
 
-export const UserGroupSchema = yup
+export type GetUserGroupListRequest = yup.InferType<
+	typeof GetUserGroupListRequest
+>;
+
+export const UserGroup = yup
 	.object({
 		gid: yup
 			.string()
@@ -150,7 +178,9 @@ export const UserGroupSchema = yup
 	})
 	.required();
 
-export const GetUserGroupListResponseSchema = yup
+export type UserGroup = yup.InferType<typeof UserGroup>;
+
+export const GetUserGroupListResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -171,7 +201,11 @@ export const GetUserGroupListResponseSchema = yup
 	})
 	.required();
 
-export const ResolveVanityURLRequestSchema = yup
+export type GetUserGroupListResponse = yup.InferType<
+	typeof GetUserGroupListResponse
+>;
+
+export const ResolveVanityURLRequest = yup
 	.object({
 		key: yup.string().required(),
 		vanityurl: yup.string().min(1).required(),
@@ -179,7 +213,11 @@ export const ResolveVanityURLRequestSchema = yup
 	})
 	.required();
 
-export const ResolveVanityURLResponseSchema = yup
+export type ResolveVanityURLRequest = yup.InferType<
+	typeof ResolveVanityURLRequest
+>;
+
+export const ResolveVanityURLResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -191,7 +229,11 @@ export const ResolveVanityURLResponseSchema = yup
 	})
 	.required();
 
-export const GetFriendListRequestSchema = yup
+export type ResolveVanityURLResponse = yup.InferType<
+	typeof ResolveVanityURLResponse
+>;
+
+export const GetFriendListRequest = yup
 	.object({
 		key: yup.string().required(),
 		steamid: yup
@@ -202,7 +244,9 @@ export const GetFriendListRequestSchema = yup
 	})
 	.required();
 
-export const FriendSchema = yup
+export type GetFriendListRequest = yup.InferType<typeof GetFriendListRequest>;
+
+export const Friend = yup
 	.object({
 		steamid: yup
 			.string()
@@ -216,7 +260,9 @@ export const FriendSchema = yup
 	})
 	.required();
 
-export const GetFriendListResponseSchema = yup
+export type Friend = yup.InferType<typeof Friend>;
+
+export const GetFriendListResponse = yup
 	.object({
 		friendslist: yup
 			.object({
@@ -241,7 +287,9 @@ export const GetFriendListResponseSchema = yup
 	})
 	.required();
 
-export const GetPlayerBansRequestSchema = yup
+export type GetFriendListResponse = yup.InferType<typeof GetFriendListResponse>;
+
+export const GetPlayerBansRequest = yup
 	.object({
 		key: yup.string().required(),
 		steamids: yup
@@ -251,7 +299,9 @@ export const GetPlayerBansRequestSchema = yup
 	})
 	.required();
 
-export const PlayerBanSchema = yup
+export type GetPlayerBansRequest = yup.InferType<typeof GetPlayerBansRequest>;
+
+export const PlayerBan = yup
 	.object({
 		SteamId: yup
 			.string()
@@ -268,7 +318,9 @@ export const PlayerBanSchema = yup
 	})
 	.required();
 
-export const GetPlayerBansResponseSchema = yup
+export type PlayerBan = yup.InferType<typeof PlayerBan>;
+
+export const GetPlayerBansResponse = yup
 	.object({
 		players: yup
 			.array()
@@ -291,3 +343,5 @@ export const GetPlayerBansResponseSchema = yup
 			.required(),
 	})
 	.required();
+
+export type GetPlayerBansResponse = yup.InferType<typeof GetPlayerBansResponse>;

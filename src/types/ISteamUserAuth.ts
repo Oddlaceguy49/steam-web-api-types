@@ -32,7 +32,7 @@ export interface AuthenticateUserTicketRequest {
 export interface AuthenticateUserTicketResponse {
 	response: {
 		/**
-		 * @pattern ^[0-9]{17}$
+		 * @pattern "^[0-9]{17}$"
 		 * @description The user's 64-bit SteamID if the ticket is valid.
 		 */
 		steamid?: string;

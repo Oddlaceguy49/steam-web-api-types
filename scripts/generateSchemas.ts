@@ -40,7 +40,7 @@ const targetConfig = {
 	yup: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
 	valibot: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
 	// arktype: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // REALLY DAMN HARD
-	effect: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT }, // Added
+	// effect: { strategy: SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT }, // NOPE BROKEN
 	jsonschema: { strategy: SCRIPT_CONFIG.STRATEGIES.JSON_SCHEMA }, // Added
 };
 
@@ -56,15 +56,39 @@ const strategies = {
 
 	[SCRIPT_CONFIG.STRATEGIES.TYPESCRIPT_DIRECT]: {
 		generate: async ({ inputFile, targetArg }) => {
-			let generatedCode: string;
+			let generatedCode: string = "";
 			const sourceText = await fs.readFile(inputFile, "utf-8");
 			switch (targetArg) {
 				case "zod": {
-					const { getZodSchemasFile } = generateZod({
+					const { getZodSchemasFile, getInferredTypes } = generateZod({
 						sourceText,
+						getSchemaName: (identifier) => `${identifier}`,
 						keepComments: true,
 					});
-					generatedCode = getZodSchemasFile(inputFile);
+
+					// Generate the schemas part. Pass a dummy path because we will remove the import.
+					const schemasFileContent = getZodSchemasFile("./dummy");
+
+					// Generate the inferred types part.
+					const typesFileContent = getInferredTypes("./dummy");
+
+					// Clean up the generated parts.
+
+					// This regex will find `import ... from "...";` and remove it.
+					const importRegex = /^import .* from ".*";\r?\n?/gm;
+
+					// Remove the imports from both chunks.
+					const cleanedSchemas = schemasFileContent
+						.replace(importRegex, "")
+						.trim();
+					let cleanedTypes = typesFileContent.replace(importRegex, "").trim();
+
+					// This is the key fix: remove the "generated." prefix from the type aliases.
+					// E.g., change `z.infer<typeof generated.PlayerSummarySchema>` to `z.infer<typeof PlayerSummarySchema>`
+					cleanedTypes = cleanedTypes.replace(/generated\./g, "");
+
+					// Assemble the final file content with a single, clean import.
+					generatedCode = `import { z } from "zod";\n\n${cleanedSchemas}\n\n${cleanedTypes}`;
 					break;
 				}
 				case "typebox":
@@ -159,10 +183,10 @@ const strategies = {
 							}
 						);
 						// Remove import statements
-						const valibotImportRegex =
-							/^import .* from ["']valibot["'];?\r?\n?/gm;
+						// const valibotImportRegex =
+						// 	/^import .* from ["']valibot["'];?\r?\n?/gm;
 
-						convertedCode = convertedCode.replace(valibotImportRegex, "");
+						// convertedCode = convertedCode.replace(valibotImportRegex, "");
 
 						break;
 					}
@@ -170,7 +194,8 @@ const strategies = {
 						const yupSchemaString = generateYupString(schema, true); // Assume top-level is required
 
 						// Assemble the final export statement
-						convertedCode = `export const ${typeName}Schema = ${yupSchemaString};`;
+						convertedCode = `export const ${typeName} = ${yupSchemaString};`;
+						convertedCode += `\n\nexport type ${typeName} = yup.InferType<typeof ${typeName}>;`;
 						break;
 					}
 					case "arktype": {

@@ -2,7 +2,7 @@
 
 import * as yup from "yup";
 
-export const AuthenticateUserTicketRequestSchema = yup
+export const AuthenticateUserTicketRequest = yup
 	.object({
 		key: yup.string().min(1).required(),
 		appid: yup.number().min(1).required(),
@@ -11,7 +11,11 @@ export const AuthenticateUserTicketRequestSchema = yup
 	})
 	.required();
 
-export const AuthenticateUserTicketResponseSchema = yup
+export type AuthenticateUserTicketRequest = yup.InferType<
+	typeof AuthenticateUserTicketRequest
+>;
+
+export const AuthenticateUserTicketResponse = yup
 	.object({
 		response: yup
 			.object({
@@ -24,3 +28,7 @@ export const AuthenticateUserTicketResponseSchema = yup
 			.required(),
 	})
 	.required();
+
+export type AuthenticateUserTicketResponse = yup.InferType<
+	typeof AuthenticateUserTicketResponse
+>;

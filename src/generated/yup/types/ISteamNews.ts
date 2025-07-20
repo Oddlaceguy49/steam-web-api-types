@@ -2,7 +2,7 @@
 
 import * as yup from "yup";
 
-export const GetNewsForAppRequestSchema = yup
+export const GetNewsForAppRequest = yup
 	.object({
 		appid: yup.number().min(1).required(),
 		maxlength: yup.number().min(0),
@@ -13,7 +13,9 @@ export const GetNewsForAppRequestSchema = yup
 	})
 	.required();
 
-export const NewsItemSchema = yup
+export type GetNewsForAppRequest = yup.InferType<typeof GetNewsForAppRequest>;
+
+export const NewsItem = yup
 	.object({
 		gid: yup
 			.string()
@@ -32,7 +34,9 @@ export const NewsItemSchema = yup
 	})
 	.required();
 
-export const GetNewsForAppResponseSchema = yup
+export type NewsItem = yup.InferType<typeof NewsItem>;
+
+export const GetNewsForAppResponse = yup
 	.object({
 		appnews: yup
 			.object({
@@ -62,3 +66,5 @@ export const GetNewsForAppResponseSchema = yup
 			.required(),
 	})
 	.required();
+
+export type GetNewsForAppResponse = yup.InferType<typeof GetNewsForAppResponse>;

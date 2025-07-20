@@ -1,39 +1,39 @@
 // THIS FILE IS AUTO-GENERATED FOR BARREL FILE. DO NOT EDIT.
 
 export {
-	authenticateUserTicketRequestSchema,
-	authenticateUserTicketResponseSchema,
+	AuthenticateUserTicketRequest,
+	AuthenticateUserTicketResponse,
 } from "./types/ISteamUserAuth";
 
 export {
-	playerSummarySchema,
-	getPlayerSummariesResponseSchema,
-	checkAppOwnershipRequestSchema,
-	checkAppOwnershipResponseSchema,
-	getDeletedSteamIDsRequestSchema,
-	deletedSteamIDSchema,
-	getDeletedSteamIDsResponseSchema,
-	getUserGroupListRequestSchema,
-	userGroupSchema,
-	getUserGroupListResponseSchema,
-	resolveVanityURLRequestSchema,
-	resolveVanityURLResponseSchema,
-	getFriendListRequestSchema,
-	friendSchema,
-	getFriendListResponseSchema,
-	getPlayerBansRequestSchema,
-	playerBanSchema,
-	getPlayerBansResponseSchema,
+	PlayerSummary,
+	GetPlayerSummariesResponse,
+	CheckAppOwnershipRequest,
+	CheckAppOwnershipResponse,
+	GetDeletedSteamIDsRequest,
+	DeletedSteamID,
+	GetDeletedSteamIDsResponse,
+	GetUserGroupListRequest,
+	UserGroup,
+	GetUserGroupListResponse,
+	ResolveVanityURLRequest,
+	ResolveVanityURLResponse,
+	GetFriendListRequest,
+	Friend,
+	GetFriendListResponse,
+	GetPlayerBansRequest,
+	PlayerBan,
+	GetPlayerBansResponse,
 } from "./types/ISteamUser";
 
 export {
-	getNewsForAppRequestSchema,
-	newsItemSchema,
-	getNewsForAppResponseSchema,
+	GetNewsForAppRequest,
+	NewsItem,
+	GetNewsForAppResponse,
 } from "./types/ISteamNews";
 
 export {
-	getRecentlyPlayedGamesRequestSchema,
-	recentlyPlayedGameSchema,
-	getRecentlyPlayedGamesResponseSchema,
+	GetRecentlyPlayedGamesRequest,
+	RecentlyPlayedGame,
+	GetRecentlyPlayedGamesResponse,
 } from "./types/IPlayerService";
