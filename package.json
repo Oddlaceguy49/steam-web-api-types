@@ -23,7 +23,12 @@
     "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
-    "build": "bun run gen && bun run build:types"
+    "build": "bun run gen && bun run build:types",
+    "publish": "bun run build && npm publish --access public",
+    "release:patch": "npm version patch && bun run publish",
+    "release:minor": "npm version minor && bun run publish",
+    "release:major": "npm version major && bun run publish",
+    "push-release": "git push && git push --tags"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
