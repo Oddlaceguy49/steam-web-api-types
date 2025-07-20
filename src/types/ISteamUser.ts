@@ -52,11 +52,19 @@ export interface PlayerSummary {
 	 */
 	avatarfull: string;
 	/**
+	 * @description The SHA1 hash of the player's avatar.
+	 */
+	avatarhash?: string;
+	/**
 	 * @minimum 0
 	 * @maximum 6
 	 * @description The player's current online status (0 = Offline, 1 = Online, 2 = Busy, 3 = Away, 4 = Snooze, 5 = Looking to Trade, 6 = Looking to Play).
 	 */
 	personastate: number;
+	/**
+	 * @description A bitmask indicating details about the user's session.
+	 */
+	personastateflags?: number;
 	/**
 	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit ID of the player's primary clan.
@@ -155,7 +163,7 @@ export interface GetDeletedSteamIDsRequest {
 	 * @pattern "^[0-9]+$"
 	 * @description An unsigned 64-bit value for pagination.
 	 */
-	rowversion: string; // uint64 is represented as string in TypeScript
+	rowversion: string;
 }
 
 /*** Represents a deleted Steam ID.
@@ -180,7 +188,7 @@ export interface GetDeletedSteamIDsResponse {
 		 * @pattern "^[0-9]+$"
 		 * @description The rowversion for the next request.
 		 */
-		rowversion: string; // uint64 is represented as string in TypeScript
+		rowversion: string;
 	};
 }
 
@@ -218,7 +226,10 @@ export interface GetUserGroupListResponse {
 		 * @description True if the request was successful.
 		 */
 		success: boolean;
-		groups: UserGroup[];
+		/**
+		 * @description An array of groups the user is a member of. May be omitted on failure or if the profile is private.
+		 */
+		groups?: UserGroup[];
 	};
 }
 
@@ -308,7 +319,10 @@ export interface Friend {
  * @description Response containing a user's friend list.
  */
 export interface GetFriendListResponse {
-	friendslist: {
+	/**
+	 * @description The list of friends. May be omitted if the user's profile is private.
+	 */
+	friendslist?: {
 		friends: Friend[];
 	};
 }
@@ -323,7 +337,7 @@ export interface GetPlayerBansRequest {
 	 * @pattern "^[0-9,]+$"
 	 * @description Comma-separated list of 64-bit SteamIDs.
 	 */
-	steamids: string; // Comma-separated list of 64-bit SteamIDs
+	steamids: string;
 }
 
 /*** Represents player ban information.
