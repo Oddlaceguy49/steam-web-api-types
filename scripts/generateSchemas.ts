@@ -42,33 +42,95 @@ async function generateBarrelFile(
 	console.log(`   -> ✅ ${fileName} generated at ${filePath}`);
 }
 
-async function generateFiles(baseOutputDir: string, schemaOutputDir: string) {
-	console.log(`\n📦 Generating barrel files for ${schemaOutputDir}...`);
-	const globPath = `${schemaOutputDir.replace(/\\/g, "/")}/**/*.ts`;
-	const generatedFiles = await glob(globPath);
+async function transformSourceText(
+	sourceText: string,
+	inputFile: string
+): Promise<string> {
+	const project = new Project();
 
-	if (generatedFiles.length === 0) {
-		console.log(`   -> No files found in ${globPath} to index. Skipping.`);
-		return;
+	const sourceFile = project.createSourceFile(
+		inputFile, // Provide a path for context
+		sourceText, // Provide the file content
+		{ overwrite: true } // Good practice
+	);
+
+	const interfacesToProcess: InterfaceDeclaration[] =
+		sourceFile.getInterfaces();
+
+	while (interfacesToProcess.length > 0) {
+		const currentInterface = interfacesToProcess.shift();
+
+		if (!currentInterface) continue;
+
+		const parentInterfaceName = currentInterface.getName();
+
+		for (const prop of currentInterface.getProperties()) {
+			const propName = prop.getName();
+			const typeNode = prop.getTypeNode();
+
+			if (typeNode && Node.isTypeLiteral(typeNode)) {
+				const newInterfaceName = `${parentInterfaceName}_properties_${propName}`;
+
+				const newInterface = sourceFile.addInterface({
+					name: newInterfaceName,
+					isExported: true,
+					properties: typeNode
+						.getMembers()
+						.filter(Node.isPropertySignature)
+						.map((member) => member.getStructure()),
+				});
+
+				interfacesToProcess.push(newInterface);
+
+				prop.setType(newInterfaceName);
+			}
+		}
 	}
+
+	return sourceFile.getFullText();
+}
+
+async function generateFiles(
+	baseOutputDir: string,
+	schemaOutputDir: string,
+	inputFiles: string[]
+) {
+	console.log(`
+📦 Generating barrel files...`);
 
 	const indexExportRegex =
 		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+?)(?<!_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
 	const detailsExportRegex =
 		/export\s+(?:const|type|interface)\s+([A-Za-z0-9_]+_properties_[A-Za-z0-9_]+)\s*(?:=|{)/g;
 
-	await generateBarrelFile(
-		baseOutputDir,
-		generatedFiles,
-		"index.ts",
-		indexExportRegex
-	);
-	await generateBarrelFile(
-		baseOutputDir,
-		generatedFiles,
-		"details.ts",
-		detailsExportRegex
-	);
+	for (const inputFile of inputFiles) {
+		const interfaceName = path.basename(inputFile, ".ts");
+		const interfaceOutputDir = path.join(baseOutputDir, interfaceName);
+		const generatedFilePath = path.join(schemaOutputDir, `${interfaceName}.ts`);
+
+		if (!(await fileExists(generatedFilePath))) {
+			console.log(
+				`   -> Generated file not found for ${interfaceName}. Skipping barrel file generation.`
+			);
+			continue;
+		}
+
+		await fs.mkdir(interfaceOutputDir, { recursive: true });
+
+		console.log(`   -> Generating barrel files for ${interfaceName}...`);
+		await generateBarrelFile(
+			interfaceOutputDir,
+			[generatedFilePath],
+			"index.ts",
+			indexExportRegex
+		);
+		await generateBarrelFile(
+			interfaceOutputDir,
+			[generatedFilePath],
+			"details.ts",
+			detailsExportRegex
+		);
+	}
 }
 
 async function main() {
@@ -108,70 +170,22 @@ async function main() {
 		let generatedCode: string = "";
 
 		const selectedGenerator = generators[targetPackage.toLowerCase()];
+		let transformedSourceText = sourceText;
+
+		// Apply transformation for all generators except 'types'
+		if (targetPackage.toLowerCase() !== "types") {
+			transformedSourceText = await transformSourceText(sourceText, inputFile);
+		}
+
 		if (targetPackage.toLowerCase() === "typebox") {
-			generatedCode = Codegen.TypeScriptToTypeBox.Generate(sourceText);
-		} else if (targetPackage.toLowerCase() === "types") {
-			const project = new Project();
-
-			// 1. FIX: Add the source file to the project from the text you already read.
-			// This returns a reference to the sourceFile object you can now manipulate.
-			const sourceFile = project.createSourceFile(
-				inputFile, // Provide a path for context
-				sourceText, // Provide the file content
-				{ overwrite: true } // Good practice
+			generatedCode = Codegen.TypeScriptToTypeBox.Generate(
+				transformedSourceText
 			);
-
-			// 1. THE RECURSIVE STRATEGY: Create a "work queue".
-			// Initialize it with all the interfaces that exist in the file at the start.
-			const interfacesToProcess: InterfaceDeclaration[] =
-				sourceFile.getInterfaces();
-
-			// 2. Loop as long as there are interfaces in our queue to check.
-			// This loop will process the original interfaces AND any new ones we create.
-			while (interfacesToProcess.length > 0) {
-				// Get the next interface to work on. .shift() treats the array like a queue (FIFO).
-				const currentInterface = interfacesToProcess.shift();
-
-				// Safety check in case of an empty element
-				if (!currentInterface) continue;
-
-				const parentInterfaceName = currentInterface.getName();
-
-				// Iterate over every property within the CURRENT interface.
-				for (const prop of currentInterface.getProperties()) {
-					const propName = prop.getName();
-					const typeNode = prop.getTypeNode();
-
-					// Check if this property's type is an inline object literal (`{ ... }`).
-					if (typeNode && Node.isTypeLiteral(typeNode)) {
-						const newInterfaceName = `${parentInterfaceName}_properties_${propName}`;
-
-						// Create the new interface and add it to the source file.
-						const newInterface = sourceFile.addInterface({
-							name: newInterfaceName,
-							isExported: true,
-							properties: typeNode
-								.getMembers()
-								// Ensure we only process property signatures, not method signatures etc.
-								.filter(Node.isPropertySignature)
-								.map((member) => member.getStructure()),
-						});
-
-						// 3. THE CRITICAL STEP: Add the newly created interface to our work queue.
-						// The loop will now process this new interface on a future iteration to see
-						// if IT also has any inline objects that need extracting.
-						interfacesToProcess.push(newInterface);
-
-						// Update the original property to reference the new interface by name.
-						prop.setType(newInterfaceName);
-					}
-				}
-			}
-
-			// 4. Get the final, fully-transformed text from the modified AST.
-			generatedCode = sourceFile.getFullText();
+		} else if (targetPackage.toLowerCase() === "types") {
+			// The 'types' generator already handles its own transformation internally
+			generatedCode = await transformSourceText(sourceText, inputFile);
 		} else {
-			const model = Codegen.TypeScriptToModel.Generate(sourceText);
+			const model = Codegen.TypeScriptToModel.Generate(transformedSourceText);
 			generatedCode = selectedGenerator.Generate(model);
 
 			if (targetPackage.toLowerCase() === "yup") {
@@ -203,7 +217,16 @@ async function main() {
 	}
 	console.log(`\n✅ Schema file generation for ${targetPackage} complete!`);
 	console.log(`   Output directory: ${schemaOutputDir}`);
-	await generateFiles(baseOutputDir, schemaOutputDir);
+	await generateFiles(baseOutputDir, schemaOutputDir, inputFiles);
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+	try {
+		await fs.access(filePath);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 main().catch((error) => {

@@ -75,6 +75,118 @@ export type PlayerSummary_properties_loccityid = z.infer<
 >;
 export const PlayerSummary_properties_loccityid = z.number();
 
+export type CheckAppOwnershipRequest_properties_key = z.infer<
+	typeof CheckAppOwnershipRequest_properties_key
+>;
+export const CheckAppOwnershipRequest_properties_key = z.string();
+
+export type CheckAppOwnershipRequest_properties_appid = z.infer<
+	typeof CheckAppOwnershipRequest_properties_appid
+>;
+export const CheckAppOwnershipRequest_properties_appid = z.number().min(1);
+
+export type GetDeletedSteamIDsRequest_properties_key = z.infer<
+	typeof GetDeletedSteamIDsRequest_properties_key
+>;
+export const GetDeletedSteamIDsRequest_properties_key = z.string();
+
+export type GetUserGroupListRequest_properties_key = z.infer<
+	typeof GetUserGroupListRequest_properties_key
+>;
+export const GetUserGroupListRequest_properties_key = z.string();
+
+export type ResolveVanityURLRequest = z.infer<typeof ResolveVanityURLRequest>;
+export const ResolveVanityURLRequest = z.object({
+	key: z.string(),
+	vanityurl: z.string().min(1),
+	url_type: z.number().min(1).max(3).optional(),
+});
+
+export type GetFriendListRequest_properties_key = z.infer<
+	typeof GetFriendListRequest_properties_key
+>;
+export const GetFriendListRequest_properties_key = z.string();
+
+export type GetFriendListRequest_properties_relationship = z.infer<
+	typeof GetFriendListRequest_properties_relationship
+>;
+export const GetFriendListRequest_properties_relationship = z.string();
+
+export type Friend_properties_relationship = z.infer<
+	typeof Friend_properties_relationship
+>;
+export const Friend_properties_relationship = z.string();
+
+export type Friend_properties_friend_since = z.infer<
+	typeof Friend_properties_friend_since
+>;
+export const Friend_properties_friend_since = z.number();
+
+export type GetPlayerBansRequest_properties_key = z.infer<
+	typeof GetPlayerBansRequest_properties_key
+>;
+export const GetPlayerBansRequest_properties_key = z.string();
+
+export type PlayerBan_properties_CommunityBanned = z.infer<
+	typeof PlayerBan_properties_CommunityBanned
+>;
+export const PlayerBan_properties_CommunityBanned = z.boolean();
+
+export type PlayerBan_properties_VACBanned = z.infer<
+	typeof PlayerBan_properties_VACBanned
+>;
+export const PlayerBan_properties_VACBanned = z.boolean();
+
+export type PlayerBan_properties_NumberOfVACBans = z.infer<
+	typeof PlayerBan_properties_NumberOfVACBans
+>;
+export const PlayerBan_properties_NumberOfVACBans = z.number().min(0);
+
+export type PlayerBan_properties_DaysSinceLastBan = z.infer<
+	typeof PlayerBan_properties_DaysSinceLastBan
+>;
+export const PlayerBan_properties_DaysSinceLastBan = z.number().min(0);
+
+export type PlayerBan_properties_EconomyBan = z.infer<
+	typeof PlayerBan_properties_EconomyBan
+>;
+export const PlayerBan_properties_EconomyBan = z.string();
+
+export type GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
+	z.infer<
+		typeof GetPlayerBansResponse_properties_players_items_properties_CommunityBanned
+	>;
+export const GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
+	z.boolean();
+
+export type GetPlayerBansResponse_properties_players_items_properties_VACBanned =
+	z.infer<
+		typeof GetPlayerBansResponse_properties_players_items_properties_VACBanned
+	>;
+export const GetPlayerBansResponse_properties_players_items_properties_VACBanned =
+	z.boolean();
+
+export type GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
+	z.infer<
+		typeof GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans
+	>;
+export const GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
+	z.number().min(0);
+
+export type GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
+	z.infer<
+		typeof GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan
+	>;
+export const GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
+	z.number().min(0);
+
+export type GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
+	z.infer<
+		typeof GetPlayerBansResponse_properties_players_items_properties_EconomyBan
+	>;
+export const GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
+	z.string();
+
 export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_communityvisibilitystate =
 	z.infer<
 		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_communityvisibilitystate
@@ -173,16 +285,6 @@ export type GetPlayerSummariesResponse_properties_response_properties_players_it
 export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccityid =
 	z.number();
 
-export type CheckAppOwnershipRequest_properties_key = z.infer<
-	typeof CheckAppOwnershipRequest_properties_key
->;
-export const CheckAppOwnershipRequest_properties_key = z.string();
-
-export type CheckAppOwnershipRequest_properties_appid = z.infer<
-	typeof CheckAppOwnershipRequest_properties_appid
->;
-export const CheckAppOwnershipRequest_properties_appid = z.number().min(1);
-
 export type CheckAppOwnershipResponse_properties_appownership_properties_ownsApp =
 	z.infer<
 		typeof CheckAppOwnershipResponse_properties_appownership_properties_ownsApp
@@ -204,29 +306,12 @@ export type CheckAppOwnershipResponse_properties_appownership_properties_sitelic
 export const CheckAppOwnershipResponse_properties_appownership_properties_sitelicense =
 	z.boolean();
 
-export type GetDeletedSteamIDsRequest_properties_key = z.infer<
-	typeof GetDeletedSteamIDsRequest_properties_key
->;
-export const GetDeletedSteamIDsRequest_properties_key = z.string();
-
-export type GetUserGroupListRequest_properties_key = z.infer<
-	typeof GetUserGroupListRequest_properties_key
->;
-export const GetUserGroupListRequest_properties_key = z.string();
-
 export type GetUserGroupListResponse_properties_response_properties_success =
 	z.infer<
 		typeof GetUserGroupListResponse_properties_response_properties_success
 	>;
 export const GetUserGroupListResponse_properties_response_properties_success =
 	z.boolean();
-
-export type ResolveVanityURLRequest = z.infer<typeof ResolveVanityURLRequest>;
-export const ResolveVanityURLRequest = z.object({
-	key: z.string(),
-	vanityurl: z.string().min(1),
-	url_type: z.number().min(1).max(3).optional(),
-});
 
 export type ResolveVanityURLResponse_properties_response_properties_success =
 	z.infer<
@@ -243,26 +328,6 @@ export type ResolveVanityURLResponse_properties_response_properties_message =
 export const ResolveVanityURLResponse_properties_response_properties_message =
 	z.string();
 
-export type GetFriendListRequest_properties_key = z.infer<
-	typeof GetFriendListRequest_properties_key
->;
-export const GetFriendListRequest_properties_key = z.string();
-
-export type GetFriendListRequest_properties_relationship = z.infer<
-	typeof GetFriendListRequest_properties_relationship
->;
-export const GetFriendListRequest_properties_relationship = z.string();
-
-export type Friend_properties_relationship = z.infer<
-	typeof Friend_properties_relationship
->;
-export const Friend_properties_relationship = z.string();
-
-export type Friend_properties_friend_since = z.infer<
-	typeof Friend_properties_friend_since
->;
-export const Friend_properties_friend_since = z.number();
-
 export type GetFriendListResponse_properties_friendslist_properties_friends_items_properties_relationship =
 	z.infer<
 		typeof GetFriendListResponse_properties_friendslist_properties_friends_items_properties_relationship
@@ -276,68 +341,3 @@ export type GetFriendListResponse_properties_friendslist_properties_friends_item
 	>;
 export const GetFriendListResponse_properties_friendslist_properties_friends_items_properties_friend_since =
 	z.number();
-
-export type GetPlayerBansRequest_properties_key = z.infer<
-	typeof GetPlayerBansRequest_properties_key
->;
-export const GetPlayerBansRequest_properties_key = z.string();
-
-export type PlayerBan_properties_CommunityBanned = z.infer<
-	typeof PlayerBan_properties_CommunityBanned
->;
-export const PlayerBan_properties_CommunityBanned = z.boolean();
-
-export type PlayerBan_properties_VACBanned = z.infer<
-	typeof PlayerBan_properties_VACBanned
->;
-export const PlayerBan_properties_VACBanned = z.boolean();
-
-export type PlayerBan_properties_NumberOfVACBans = z.infer<
-	typeof PlayerBan_properties_NumberOfVACBans
->;
-export const PlayerBan_properties_NumberOfVACBans = z.number().min(0);
-
-export type PlayerBan_properties_DaysSinceLastBan = z.infer<
-	typeof PlayerBan_properties_DaysSinceLastBan
->;
-export const PlayerBan_properties_DaysSinceLastBan = z.number().min(0);
-
-export type PlayerBan_properties_EconomyBan = z.infer<
-	typeof PlayerBan_properties_EconomyBan
->;
-export const PlayerBan_properties_EconomyBan = z.string();
-
-export type GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
-	z.infer<
-		typeof GetPlayerBansResponse_properties_players_items_properties_CommunityBanned
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
-	z.boolean();
-
-export type GetPlayerBansResponse_properties_players_items_properties_VACBanned =
-	z.infer<
-		typeof GetPlayerBansResponse_properties_players_items_properties_VACBanned
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_VACBanned =
-	z.boolean();
-
-export type GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
-	z.infer<
-		typeof GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
-	z.number().min(0);
-
-export type GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
-	z.infer<
-		typeof GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
-	z.number().min(0);
-
-export type GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
-	z.infer<
-		typeof GetPlayerBansResponse_properties_players_items_properties_EconomyBan
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
-	z.string();

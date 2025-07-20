@@ -18,12 +18,10 @@ export const RecentlyPlayedGame = z.object({
 	has_community_visible_stats: z.boolean(),
 });
 
-export type GetRecentlyPlayedGamesResponse = z.infer<
-	typeof GetRecentlyPlayedGamesResponse
+export type GetRecentlyPlayedGamesResponse_properties_response = z.infer<
+	typeof GetRecentlyPlayedGamesResponse_properties_response
 >;
-export const GetRecentlyPlayedGamesResponse = z.object({
-	response: z.object({
-		total_count: z.number().min(0),
-		games: z.array(RecentlyPlayedGame),
-	}),
+export const GetRecentlyPlayedGamesResponse_properties_response = z.object({
+	total_count: z.number().min(0),
+	games: z.array(RecentlyPlayedGame),
 });
