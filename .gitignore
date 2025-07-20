@@ -224,4 +224,4 @@ worker-configuration.d.ts
 /drizzle/migrations/meta
 
 # generated
-/src/generated
+/src/generated/
