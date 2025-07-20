@@ -6,9 +6,9 @@
     "emitDeclarationOnly": true,
     "strict": true,
     "skipLibCheck": true,
-    "module": "esnext",
+    "module": "nodenext",
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "typeRoots": [
       "./node_modules/@types"
     ],
