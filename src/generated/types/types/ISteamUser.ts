@@ -97,9 +97,7 @@ export interface PlayerSummary {
  * @description Response containing player summary information.
  */
 export interface GetPlayerSummariesResponse {
-	response: {
-		players: PlayerSummary[];
-	};
+	response: GetPlayerSummariesResponse_properties_response;
 }
 
 /*** Parameters for the ISteamUser/CheckAppOwnership/v4 endpoint.
@@ -125,26 +123,7 @@ export interface CheckAppOwnershipRequest {
  * @description Response indicating app ownership.
  */
 export interface CheckAppOwnershipResponse {
-	appownership: {
-		/**
-		 * @description True if the user owns the app, false otherwise.
-		 */
-		ownsApp: boolean;
-		/**
-		 * @format unix-timestamp
-		 * @description The time the app was acquired by the user.
-		 */
-		timeAcquired: number;
-		/**
-		 * @pattern ^[0-9]{17}$
-		 * @description The 64-bit SteamID of the true owner (if family shared).
-		 */
-		ownerSteamID: string;
-		/**
-		 * @description True if the app is accessed via site license (PC Cafe program).
-		 */
-		sitelicense?: boolean;
-	};
+	appownership: CheckAppOwnershipResponse_properties_appownership;
 }
 
 /*** Parameters for the ISteamUser/GetDeletedSteamIDs/v1 endpoint.
@@ -176,14 +155,7 @@ export interface DeletedSteamID {
  * @description Response containing a list of deleted SteamIDs.
  */
 export interface GetDeletedSteamIDsResponse {
-	response: {
-		deletedids: DeletedSteamID[];
-		/**
-		 * @pattern ^[0-9]+$
-		 * @description The rowversion for the next request.
-		 */
-		rowversion: string; // uint64 is represented as string in TypeScript
-	};
+	response: GetDeletedSteamIDsResponse_properties_response;
 }
 
 /*** Parameters for the ISteamUser/GetUserGroupList/v1 endpoint.
@@ -215,13 +187,7 @@ export interface UserGroup {
  * @description Response containing a user's group list.
  */
 export interface GetUserGroupListResponse {
-	response: {
-		/**
-		 * @description True if the request was successful.
-		 */
-		success: boolean;
-		groups: UserGroup[];
-	};
+	response: GetUserGroupListResponse_properties_response;
 }
 
 /*** Parameters for the ISteamUser/ResolveVanityURL/v1 endpoint.
@@ -248,22 +214,7 @@ export interface ResolveVanityURLRequest {
  * @description Response containing the resolved SteamID from a vanity URL.
  */
 export interface ResolveVanityURLResponse {
-	response: {
-		/**
-		 * @pattern ^[0-9]{17}$
-		 * @description The 64-bit SteamID if resolved successfully.
-		 */
-		steamid?: string;
-		/**
-		 * @minimum 1
-		 * @description The success status (1 = success, 42 = no match).
-		 */
-		success: number;
-		/**
-		 * @description A message describing the status.
-		 */
-		message?: string;
-	};
+	response: ResolveVanityURLResponse_properties_response;
 }
 
 /*** Parameters for the ISteamUser/GetFriendList/v1 endpoint.
@@ -310,9 +261,7 @@ export interface Friend {
  * @description Response containing a user's friend list.
  */
 export interface GetFriendListResponse {
-	friendslist: {
-		friends: Friend[];
-	};
+	friendslist: GetFriendListResponse_properties_friendslist;
 }
 
 /*** Parameters for the ISteamUser/GetPlayerBans/v1 endpoint.
@@ -368,4 +317,59 @@ export interface PlayerBan {
  */
 export interface GetPlayerBansResponse {
 	players: PlayerBan[];
+}
+
+export interface GetPlayerSummariesResponse_properties_response {
+	players: PlayerSummary[];
+}
+
+export interface CheckAppOwnershipResponse_properties_appownership {
+	/** @description True if the user owns the app, false otherwise. */
+	ownsApp: boolean;
+	/**
+	 * @format unix-timestamp
+	 * @description The time the app was acquired by the user.
+	 */
+	timeAcquired: number;
+	/**
+	 * @pattern ^[0-9]{17}$
+	 * @description The 64-bit SteamID of the true owner (if family shared).
+	 */
+	ownerSteamID: string;
+	/** @description True if the app is accessed via site license (PC Cafe program). */
+	sitelicense?: boolean;
+}
+
+export interface GetDeletedSteamIDsResponse_properties_response {
+	deletedids: DeletedSteamID[];
+	/**
+	 * @pattern ^[0-9]+$
+	 * @description The rowversion for the next request.
+	 */
+	rowversion: string;
+}
+
+export interface GetUserGroupListResponse_properties_response {
+	/** @description True if the request was successful. */
+	success: boolean;
+	groups: UserGroup[];
+}
+
+export interface ResolveVanityURLResponse_properties_response {
+	/**
+	 * @pattern ^[0-9]{17}$
+	 * @description The 64-bit SteamID if resolved successfully.
+	 */
+	steamid?: string;
+	/**
+	 * @minimum 1
+	 * @description The success status (1 = success, 42 = no match).
+	 */
+	success: number;
+	/** @description A message describing the status. */
+	message?: string;
+}
+
+export interface GetFriendListResponse_properties_friendslist {
+	friends: Friend[];
 }

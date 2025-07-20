@@ -1,24 +1,25 @@
 // THIS FILE IS AUTO-GENERATED FOR ARKTYPE. DO NOT EDIT.
 
-import { type } from "arktype";
+import { scope, type } from "arktype";
 
-export const AuthenticateUserTicketRequest = type({
-	key: "string>=1",
-	appid: "number>=1",
-	ticket: "string>=1",
-	"identity?": "string>=1",
-});
-export type AuthenticateUserTicketRequestType =
+export const types = scope({
+	AuthenticateUserTicketRequest: type({
+		key: "string>=1",
+		appid: "number>=1",
+		ticket: "string>=1",
+		"identity?": "string>=1",
+	}),
+	AuthenticateUserTicketResponse_properties_response_properties_error: type({
+		errorcode: "number",
+		errordesc: "string>=1",
+	}),
+}).export();
+
+export type AuthenticateUserTicketRequest =
 	typeof AuthenticateUserTicketRequest.infer;
-
-export const AuthenticateUserTicketResponse = type({
-	response: {
-		"steamid?": /^[0-9]{17}$/,
-		"error?": {
-			errorcode: "number",
-			errordesc: "string>=1",
-		},
-	},
-});
-export type AuthenticateUserTicketResponseType =
-	typeof AuthenticateUserTicketResponse.infer;
+export const AuthenticateUserTicketRequest =
+	types.AuthenticateUserTicketRequest;
+export type AuthenticateUserTicketResponse_properties_response_properties_error =
+	typeof AuthenticateUserTicketResponse_properties_response_properties_error.infer;
+export const AuthenticateUserTicketResponse_properties_response_properties_error =
+	types.AuthenticateUserTicketResponse_properties_response_properties_error;

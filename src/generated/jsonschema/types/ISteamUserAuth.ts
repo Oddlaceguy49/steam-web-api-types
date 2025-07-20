@@ -1,7 +1,9 @@
 // THIS FILE IS AUTO-GENERATED FOR JSONSCHEMA. DO NOT EDIT.
 
 export const AuthenticateUserTicketRequest = {
+	see: "https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket",
 	description: "Parameters for authenticating a user ticket.",
+	$id: "AuthenticateUserTicketRequest",
 	type: "object",
 	properties: {
 		key: {
@@ -26,46 +28,23 @@ export const AuthenticateUserTicketRequest = {
 			type: "string",
 		},
 	},
-	additionalProperties: false,
-	required: ["appid", "key", "ticket"],
-	$schema: "http://json-schema.org/draft-07/schema#",
-	$id: "AuthenticateUserTicketRequest",
-} as const;
-
-export const AuthenticateUserTicketResponse = {
-	description: "Response from authenticating a user ticket.",
-	type: "object",
-	properties: {
-		response: {
-			type: "object",
-			properties: {
-				steamid: {
-					pattern: "^[0-9]{17}$",
-					description: "The user's 64-bit SteamID if the ticket is valid.",
-					type: "string",
-				},
-				error: {
-					type: "object",
-					properties: {
-						errorcode: {
-							description: "Error code if authentication fails.",
-							type: "number",
-						},
-						errordesc: {
-							minLength: 1,
-							description: "Error description if authentication fails.",
-							type: "string",
-						},
-					},
-					additionalProperties: false,
-					required: ["errorcode", "errordesc"],
-				},
+	required: ["key", "appid", "ticket"],
+};
+export const AuthenticateUserTicketResponse_properties_response_properties_error =
+	{
+		description: "Error code if authentication fails.",
+		type: "object",
+		properties: {
+			errorcode: {
+				description: "Error code if authentication fails.",
+				type: "number",
 			},
-			additionalProperties: false,
+			errordesc: {
+				minLength: 1,
+				description: "Error description if authentication fails.",
+				type: "string",
+			},
 		},
-	},
-	additionalProperties: false,
-	required: ["response"],
-	$schema: "http://json-schema.org/draft-07/schema#",
-	$id: "AuthenticateUserTicketResponse",
-} as const;
+		required: ["errorcode", "errordesc"],
+		$id: "AuthenticateUserTicketResponse_properties_response_properties_error",
+	};

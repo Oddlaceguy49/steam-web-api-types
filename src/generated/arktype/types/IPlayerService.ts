@@ -1,38 +1,34 @@
 // THIS FILE IS AUTO-GENERATED FOR ARKTYPE. DO NOT EDIT.
 
-import { type } from "arktype";
+import { scope, type } from "arktype";
 
-export const GetRecentlyPlayedGamesRequest = type({
-	steamid: /^[0-9]{17}$/,
-	"count?": "number>=0",
-});
-export type GetRecentlyPlayedGamesRequestType =
-	typeof GetRecentlyPlayedGamesRequest.infer;
+export const types = scope({
+	GetRecentlyPlayedGamesRequest_properties_count: "number>=0",
+	RecentlyPlayedGame: type({
+		appid: "number>=1",
+		name: "string",
+		playtime_2weeks: "number>=0",
+		playtime_forever: "number>=0",
+		img_icon_url: "string",
+		img_logo_url: "string",
+		has_community_visible_stats: "boolean",
+	}),
+	GetRecentlyPlayedGamesResponse: type({
+		response: type({
+			total_count: "number>=0",
+			// @ts-expect-error
+			games: "RecentlyPlayedGame[]",
+		}),
+	}),
+}).export();
 
-export const RecentlyPlayedGame = type({
-	appid: "number>=1",
-	name: "string",
-	playtime_2weeks: "number>=0",
-	playtime_forever: "number>=0",
-	img_icon_url: "string.url",
-	img_logo_url: "string.url",
-	has_community_visible_stats: "boolean",
-});
-export type RecentlyPlayedGameType = typeof RecentlyPlayedGame.infer;
-
-export const GetRecentlyPlayedGamesResponse = type({
-	response: {
-		total_count: "number>=0",
-		games: {
-			appid: "number>=1",
-			name: "string",
-			playtime_2weeks: "number>=0",
-			playtime_forever: "number>=0",
-			img_icon_url: "string.url",
-			img_logo_url: "string.url",
-			has_community_visible_stats: "boolean",
-		},
-	},
-});
-export type GetRecentlyPlayedGamesResponseType =
+export type GetRecentlyPlayedGamesRequest_properties_count =
+	typeof GetRecentlyPlayedGamesRequest_properties_count.infer;
+export const GetRecentlyPlayedGamesRequest_properties_count =
+	types.GetRecentlyPlayedGamesRequest_properties_count;
+export type RecentlyPlayedGame = typeof RecentlyPlayedGame.infer;
+export const RecentlyPlayedGame = types.RecentlyPlayedGame;
+export type GetRecentlyPlayedGamesResponse =
 	typeof GetRecentlyPlayedGamesResponse.infer;
+export const GetRecentlyPlayedGamesResponse =
+	types.GetRecentlyPlayedGamesResponse;
