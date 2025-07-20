@@ -1,6 +1,6 @@
 {
   "name": "@oddlaceguy49/steam-web-api-types",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
   "module": "index.ts",
   "license": "MIT",
@@ -20,8 +20,9 @@
     "gen:effect": "bun run gen-script effect",
     "gen:jsonschema": "bun run gen-script jsonschema",
     "// --- MAIN BUILD SCRIPT ---": "",
+    "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "gen": "echo 'Running all schema generators...' && bun run pregen && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
+    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
