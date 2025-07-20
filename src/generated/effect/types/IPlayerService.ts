@@ -3,12 +3,13 @@
 import { Schema as ET } from "@effect/schema/Schema";
 import { Schema as ES } from "@effect/schema";
 
-export type GetRecentlyPlayedGamesRequest_properties_count = ET.Type<
-	typeof GetRecentlyPlayedGamesRequest_properties_count
+export type GetRecentlyPlayedGamesRequest = ET.Type<
+	typeof GetRecentlyPlayedGamesRequest
 >;
-export const GetRecentlyPlayedGamesRequest_properties_count = ES.Number.pipe(
-	ES.greaterThanOrEqualTo(0)
-);
+export const GetRecentlyPlayedGamesRequest = ES.Struct({
+	steamid: ES.String,
+	count: ES.optional(ES.Number.pipe(ES.greaterThanOrEqualTo(0))),
+});
 
 export type RecentlyPlayedGame = ET.Type<typeof RecentlyPlayedGame>;
 export const RecentlyPlayedGame = ES.Struct({
@@ -21,12 +22,17 @@ export const RecentlyPlayedGame = ES.Struct({
 	has_community_visible_stats: ES.Boolean,
 });
 
+export type GetRecentlyPlayedGamesResponse_properties_response = ET.Type<
+	typeof GetRecentlyPlayedGamesResponse_properties_response
+>;
+export const GetRecentlyPlayedGamesResponse_properties_response = ES.Struct({
+	total_count: ES.Number.pipe(ES.greaterThanOrEqualTo(0)),
+	games: ES.Array(RecentlyPlayedGame),
+});
+
 export type GetRecentlyPlayedGamesResponse = ET.Type<
 	typeof GetRecentlyPlayedGamesResponse
 >;
 export const GetRecentlyPlayedGamesResponse = ES.Struct({
-	response: ES.Struct({
-		total_count: ES.Number.pipe(ES.greaterThanOrEqualTo(0)),
-		games: ES.Array(RecentlyPlayedGame),
-	}),
+	response: GetRecentlyPlayedGamesResponse_properties_response,
 });

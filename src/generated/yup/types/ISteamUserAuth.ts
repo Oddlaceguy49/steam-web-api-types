@@ -21,3 +21,19 @@ export const AuthenticateUserTicketResponse_properties_response_properties_error
 		errorcode: y.number().required(),
 		errordesc: y.string().required().min(1),
 	});
+
+export type AuthenticateUserTicketResponse_properties_response = y.InferType<
+	typeof AuthenticateUserTicketResponse_properties_response
+>;
+export const AuthenticateUserTicketResponse_properties_response = y.object({
+	steamid: y.string().required().optional(),
+	error:
+		AuthenticateUserTicketResponse_properties_response_properties_error.optional(),
+});
+
+export type AuthenticateUserTicketResponse = y.InferType<
+	typeof AuthenticateUserTicketResponse
+>;
+export const AuthenticateUserTicketResponse = y.object({
+	response: AuthenticateUserTicketResponse_properties_response,
+});

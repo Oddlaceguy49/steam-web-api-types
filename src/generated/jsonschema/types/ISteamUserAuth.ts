@@ -32,11 +32,10 @@ export const AuthenticateUserTicketRequest = {
 };
 export const AuthenticateUserTicketResponse_properties_response_properties_error =
 	{
-		description: "Error code if authentication fails.",
+		$id: "AuthenticateUserTicketResponse_properties_response_properties_error",
 		type: "object",
 		properties: {
 			errorcode: {
-				description: "Error code if authentication fails.",
 				type: "number",
 			},
 			errordesc: {
@@ -46,5 +45,65 @@ export const AuthenticateUserTicketResponse_properties_response_properties_error
 			},
 		},
 		required: ["errorcode", "errordesc"],
-		$id: "AuthenticateUserTicketResponse_properties_response_properties_error",
 	};
+export const AuthenticateUserTicketResponse_properties_response = {
+	$id: "AuthenticateUserTicketResponse_properties_response",
+	type: "object",
+	properties: {
+		steamid: {
+			pattern: "^[0-9]{17}$",
+			description: "The user's 64",
+			type: "string",
+		},
+		error: {
+			$id: "AuthenticateUserTicketResponse_properties_response_properties_error",
+			type: "object",
+			properties: {
+				errorcode: {
+					type: "number",
+				},
+				errordesc: {
+					minLength: 1,
+					description: "Error description if authentication fails.",
+					type: "string",
+				},
+			},
+			required: ["errorcode", "errordesc"],
+		},
+	},
+};
+export const AuthenticateUserTicketResponse = {
+	see: "https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket",
+	description: "Response from authenticating a user ticket.",
+	$id: "AuthenticateUserTicketResponse",
+	type: "object",
+	properties: {
+		response: {
+			$id: "AuthenticateUserTicketResponse_properties_response",
+			type: "object",
+			properties: {
+				steamid: {
+					pattern: "^[0-9]{17}$",
+					description: "The user's 64",
+					type: "string",
+				},
+				error: {
+					$id: "AuthenticateUserTicketResponse_properties_response_properties_error",
+					type: "object",
+					properties: {
+						errorcode: {
+							type: "number",
+						},
+						errordesc: {
+							minLength: 1,
+							description: "Error description if authentication fails.",
+							type: "string",
+						},
+					},
+					required: ["errorcode", "errordesc"],
+				},
+			},
+		},
+	},
+	required: ["response"],
+};

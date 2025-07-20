@@ -5,7 +5,10 @@ import { Type, Static } from "@sinclair/typebox";
 export type PlayerSummary = Static<typeof PlayerSummary>;
 export const PlayerSummary = Type.Object(
 	{
-		steamid: Type.String({ pattern: "^[0", description: "The player's 64" }),
+		steamid: Type.String({
+			pattern: "^[0-9]{17}$",
+			description: "The player's 64",
+		}),
 		communityvisibilitystate: Type.Number({
 			minimum: 0,
 			maximum: 5,
@@ -52,7 +55,7 @@ export const PlayerSummary = Type.Object(
 				"The player's current online status (0 = Offline, 1 = Online, 2 = Busy, 3 = Away, 4 = Snooze, 5 = Looking to Trade, 6 = Looking to Play).",
 		}),
 		primaryclanid: Type.Optional(
-			Type.String({ pattern: "^[0", description: "The 64" })
+			Type.String({ pattern: "^[0-9]{17}$", description: "The 64" })
 		),
 		timecreated: Type.Optional(
 			Type.Number({
@@ -87,14 +90,19 @@ export const PlayerSummary = Type.Object(
 	}
 );
 
+export type GetPlayerSummariesResponse_properties_response = Static<
+	typeof GetPlayerSummariesResponse_properties_response
+>;
+export const GetPlayerSummariesResponse_properties_response = Type.Object({
+	players: Type.Array(PlayerSummary),
+});
+
 export type GetPlayerSummariesResponse = Static<
 	typeof GetPlayerSummariesResponse
 >;
 export const GetPlayerSummariesResponse = Type.Object(
 	{
-		response: Type.Object({
-			players: Type.Array(PlayerSummary),
-		}),
+		response: GetPlayerSummariesResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries",
@@ -106,7 +114,7 @@ export type CheckAppOwnershipRequest = Static<typeof CheckAppOwnershipRequest>;
 export const CheckAppOwnershipRequest = Type.Object(
 	{
 		key: Type.String(),
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 		appid: Type.Number({ minimum: 1, description: "The AppID of the game." }),
 	},
 	{
@@ -115,30 +123,25 @@ export const CheckAppOwnershipRequest = Type.Object(
 	}
 );
 
+export type CheckAppOwnershipResponse_properties_appownership = Static<
+	typeof CheckAppOwnershipResponse_properties_appownership
+>;
+export const CheckAppOwnershipResponse_properties_appownership = Type.Object({
+	ownsApp: Type.Boolean(),
+	timeAcquired: Type.Number({
+		format: "unix",
+		description: "The time the app was acquired by the user.",
+	}),
+	ownerSteamID: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
+	sitelicense: Type.Optional(Type.Boolean()),
+});
+
 export type CheckAppOwnershipResponse = Static<
 	typeof CheckAppOwnershipResponse
 >;
 export const CheckAppOwnershipResponse = Type.Object(
 	{
-		appownership: Type.Object(
-			{
-				ownsApp: Type.Boolean({
-					description: "True if the user owns the app, false otherwise.",
-				}),
-				timeAcquired: Type.Number({
-					format: "unix",
-					description: "The time the app was acquired by the user.",
-				}),
-				ownerSteamID: Type.String({ pattern: "^[0", description: "The 64" }),
-				sitelicense: Type.Optional(
-					Type.Boolean({
-						description:
-							"True if the app is accessed via site license (PC Cafe program).",
-					})
-				),
-			},
-			{ description: "True if the user owns the app, false otherwise." }
-		),
+		appownership: CheckAppOwnershipResponse_properties_appownership,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#CheckAppOwnership",
@@ -152,7 +155,10 @@ export type GetDeletedSteamIDsRequest = Static<
 export const GetDeletedSteamIDsRequest = Type.Object(
 	{
 		key: Type.String(),
-		rowversion: Type.String({ pattern: "^[0", description: "An unsigned 64" }),
+		rowversion: Type.String({
+			pattern: "^[0-9]+$",
+			description: "An unsigned 64",
+		}),
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetDeletedSteamIDs",
@@ -163,26 +169,28 @@ export const GetDeletedSteamIDsRequest = Type.Object(
 export type DeletedSteamID = Static<typeof DeletedSteamID>;
 export const DeletedSteamID = Type.Object(
 	{
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 	},
 	{ description: "Information about a deleted SteamID." }
 );
+
+export type GetDeletedSteamIDsResponse_properties_response = Static<
+	typeof GetDeletedSteamIDsResponse_properties_response
+>;
+export const GetDeletedSteamIDsResponse_properties_response = Type.Object({
+	deletedids: Type.Array(DeletedSteamID),
+	rowversion: Type.String({
+		pattern: "^[0-9]+$",
+		description: "The rowversion for the next request.",
+	}),
+});
 
 export type GetDeletedSteamIDsResponse = Static<
 	typeof GetDeletedSteamIDsResponse
 >;
 export const GetDeletedSteamIDsResponse = Type.Object(
 	{
-		response: Type.Object(
-			{
-				deletedids: Type.Array(DeletedSteamID),
-				rowversion: Type.String({
-					pattern: "^[0",
-					description: "The rowversion for the next request.",
-				}),
-			},
-			{ pattern: "^[0", description: "The rowversion for the next request." }
-		),
+		response: GetDeletedSteamIDsResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetDeletedSteamIDs",
@@ -194,7 +202,7 @@ export type GetUserGroupListRequest = Static<typeof GetUserGroupListRequest>;
 export const GetUserGroupListRequest = Type.Object(
 	{
 		key: Type.String(),
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetUserGroupList",
@@ -205,23 +213,23 @@ export const GetUserGroupListRequest = Type.Object(
 export type UserGroup = Static<typeof UserGroup>;
 export const UserGroup = Type.Object(
 	{
-		gid: Type.String({ pattern: "^[0", description: "The 64" }),
+		gid: Type.String({ pattern: "^[0-9]+$", description: "The 64" }),
 	},
 	{ description: "Information about a Steam user group." }
 );
 
+export type GetUserGroupListResponse_properties_response = Static<
+	typeof GetUserGroupListResponse_properties_response
+>;
+export const GetUserGroupListResponse_properties_response = Type.Object({
+	success: Type.Boolean(),
+	groups: Type.Array(UserGroup),
+});
+
 export type GetUserGroupListResponse = Static<typeof GetUserGroupListResponse>;
 export const GetUserGroupListResponse = Type.Object(
 	{
-		response: Type.Object(
-			{
-				success: Type.Boolean({
-					description: "True if the request was successful.",
-				}),
-				groups: Type.Array(UserGroup),
-			},
-			{ description: "True if the request was successful." }
-		),
+		response: GetUserGroupListResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetUserGroupList",
@@ -252,24 +260,24 @@ export const ResolveVanityURLRequest = Type.Object(
 	}
 );
 
+export type ResolveVanityURLResponse_properties_response = Static<
+	typeof ResolveVanityURLResponse_properties_response
+>;
+export const ResolveVanityURLResponse_properties_response = Type.Object({
+	steamid: Type.Optional(
+		Type.String({ pattern: "^[0-9]{17}$", description: "The 64" })
+	),
+	success: Type.Number({
+		minimum: 1,
+		description: "The success status (1 = success, 42 = no match).",
+	}),
+	message: Type.Optional(Type.String()),
+});
+
 export type ResolveVanityURLResponse = Static<typeof ResolveVanityURLResponse>;
 export const ResolveVanityURLResponse = Type.Object(
 	{
-		response: Type.Object(
-			{
-				steamid: Type.Optional(
-					Type.String({ pattern: "^[0", description: "The 64" })
-				),
-				success: Type.Number({
-					minimum: 1,
-					description: "The success status (1 = success, 42 = no match).",
-				}),
-				message: Type.Optional(
-					Type.String({ description: "A message describing the status." })
-				),
-			},
-			{ pattern: "^[0", description: "The 64" }
-		),
+		response: ResolveVanityURLResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#ResolveVanityURL",
@@ -281,7 +289,7 @@ export type GetFriendListRequest = Static<typeof GetFriendListRequest>;
 export const GetFriendListRequest = Type.Object(
 	{
 		key: Type.String(),
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 		relationship: Type.Optional(
 			Type.String({
 				pattern: "^(all|friend)$",
@@ -298,7 +306,7 @@ export const GetFriendListRequest = Type.Object(
 export type Friend = Static<typeof Friend>;
 export const Friend = Type.Object(
 	{
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 		relationship: Type.String({
 			pattern: "^(friend)$",
 			description: "The relationship type (always 'friend').",
@@ -311,12 +319,17 @@ export const Friend = Type.Object(
 	{ description: "Information about a friend." }
 );
 
+export type GetFriendListResponse_properties_friendslist = Static<
+	typeof GetFriendListResponse_properties_friendslist
+>;
+export const GetFriendListResponse_properties_friendslist = Type.Object({
+	friends: Type.Array(Friend),
+});
+
 export type GetFriendListResponse = Static<typeof GetFriendListResponse>;
 export const GetFriendListResponse = Type.Object(
 	{
-		friendslist: Type.Object({
-			friends: Type.Array(Friend),
-		}),
+		friendslist: GetFriendListResponse_properties_friendslist,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetFriendList",
@@ -328,7 +341,7 @@ export type GetPlayerBansRequest = Static<typeof GetPlayerBansRequest>;
 export const GetPlayerBansRequest = Type.Object(
 	{
 		key: Type.String(),
-		steamids: Type.String({ pattern: "^[0", description: "Comma" }),
+		steamids: Type.String({ pattern: "^[0-9,]+$", description: "Comma" }),
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerBans",
@@ -339,7 +352,10 @@ export const GetPlayerBansRequest = Type.Object(
 export type PlayerBan = Static<typeof PlayerBan>;
 export const PlayerBan = Type.Object(
 	{
-		SteamId: Type.String({ pattern: "^[0", description: "The player's 64" }),
+		SteamId: Type.String({
+			pattern: "^[0-9]{17}$",
+			description: "The player's 64",
+		}),
 		CommunityBanned: Type.Boolean({
 			description: "True if the player is banned from the Steam Community.",
 		}),

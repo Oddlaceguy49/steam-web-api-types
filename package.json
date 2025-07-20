@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
   "module": "index.ts",
-  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "// --- GENERATOR SCRIPTS ---": "",
@@ -18,7 +20,7 @@
     "gen:jsonschema": "bun run gen-script jsonschema",
     "// --- MAIN BUILD SCRIPT ---": "",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:arktype && bun run gen:effect && bun run gen:jsonschema",
+    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types"
   },
   "devDependencies": {
@@ -43,47 +45,47 @@
     "zod": "^4.0.5"
   },
   "exports": {
-    ".": {
-      "types": "./dist/generated/types/index.d.ts"
-    },
     "./*": {
-      "types": "./dist/generated/types/*.d.ts"
+      "types": "./dist/types/*/index.d.ts"
     },
-    "./zod": {
-      "types": "./dist/generated/zod/index.d.ts"
+    "./*/details": {
+      "types": "./dist/types/*/details.d.ts"
     },
     "./zod/*": {
-      "types": "./dist/generated/zod/*.d.ts"
+      "types": "./dist/zod/*/index.d.ts"
     },
-    "./typebox": {
-      "types": "./dist/generated/typebox/index.d.ts"
+    "./zod/*/details": {
+      "types": "./dist/zod/*/details.d.ts"
     },
     "./typebox/*": {
-      "types": "./dist/generated/typebox/*.d.ts"
+      "types": "./dist/typebox/*/index.d.ts"
     },
-    "./valibot": {
-      "types": "./dist/generated/valibot/index.d.ts"
+    "./typebox/*/details": {
+      "types": "./dist/typebox/*/details.d.ts"
     },
     "./valibot/*": {
-      "types": "./dist/generated/valibot/*.d.ts"
+      "types": "./dist/valibot/*/index.d.ts"
     },
-    "./yup": {
-      "types": "./dist/generated/yup/index.d.ts"
+    "./valibot/*/details": {
+      "types": "./dist/valibot/*/details.d.ts"
     },
     "./yup/*": {
-      "types": "./dist/generated/yup/*.d.ts"
+      "types": "./dist/yup/*/index.d.ts"
     },
-    "./arktype": {
-      "types": "./dist/generated/arktype/index.d.ts"
+    "./yup/*/details": {
+      "types": "./dist/yup/*/details.d.ts"
     },
     "./arktype/*": {
-      "types": "./dist/generated/arktype/*.d.ts"
+      "types": "./dist/arktype/*/index.d.ts"
     },
-    "./effect": {
-      "types": "./dist/generated/effect/index.d.ts"
+    "./arktype/*/details": {
+      "types": "./dist/arktype/*/details.d.ts"
     },
     "./effect/*": {
-      "types": "./dist/generated/effect/*.d.ts"
+      "types": "./dist/effect/*/index.d.ts"
+    },
+    "./effect/*/details": {
+      "types": "./dist/effect/*/details.d.ts"
     },
     "./package.json": "./package.json"
   },

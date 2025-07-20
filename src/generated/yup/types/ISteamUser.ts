@@ -2,249 +2,121 @@
 
 import * as y from "yup";
 
-export type PlayerSummary_properties_communityvisibilitystate = y.InferType<
-	typeof PlayerSummary_properties_communityvisibilitystate
+export type PlayerSummary = y.InferType<typeof PlayerSummary>;
+export const PlayerSummary = y.object({
+	steamid: y.string().required(),
+	communityvisibilitystate: y.number().required().min(0).max(5),
+	profilestate: y.number().required().min(0).max(1).optional(),
+	personaname: y.string().required().max(32).min(1),
+	lastlogoff: y.number().required(),
+	profileurl: y.string().required(),
+	avatar: y.string().required(),
+	avatarmedium: y.string().required(),
+	avatarfull: y.string().required(),
+	personastate: y.number().required().min(0).max(6),
+	primaryclanid: y.string().required().optional(),
+	timecreated: y.number().required().optional(),
+	realname: y.string().required().min(1).optional(),
+	loccountrycode: y.string().required().max(2).min(2).optional(),
+	locstatecode: y.string().required().max(2).min(2).optional(),
+	loccityid: y.number().required().optional(),
+});
+
+export type GetPlayerSummariesResponse_properties_response = y.InferType<
+	typeof GetPlayerSummariesResponse_properties_response
 >;
-export const PlayerSummary_properties_communityvisibilitystate = y
-	.number()
-	.required()
-	.min(0)
-	.max(5);
+export const GetPlayerSummariesResponse_properties_response = y.object({
+	players: y.array(PlayerSummary),
+});
 
-export type PlayerSummary_properties_profilestate = y.InferType<
-	typeof PlayerSummary_properties_profilestate
+export type GetPlayerSummariesResponse = y.InferType<
+	typeof GetPlayerSummariesResponse
 >;
-export const PlayerSummary_properties_profilestate = y
-	.number()
-	.required()
-	.min(0)
-	.max(1);
+export const GetPlayerSummariesResponse = y.object({
+	response: GetPlayerSummariesResponse_properties_response,
+});
 
-export type PlayerSummary_properties_personaname = y.InferType<
-	typeof PlayerSummary_properties_personaname
+export type CheckAppOwnershipRequest = y.InferType<
+	typeof CheckAppOwnershipRequest
 >;
-export const PlayerSummary_properties_personaname = y
-	.string()
-	.required()
-	.max(32)
-	.min(1);
+export const CheckAppOwnershipRequest = y.object({
+	key: y.string().required(),
+	steamid: y.string().required(),
+	appid: y.number().required().min(1),
+});
 
-export type PlayerSummary_properties_lastlogoff = y.InferType<
-	typeof PlayerSummary_properties_lastlogoff
+export type CheckAppOwnershipResponse_properties_appownership = y.InferType<
+	typeof CheckAppOwnershipResponse_properties_appownership
 >;
-export const PlayerSummary_properties_lastlogoff = y.number().required();
+export const CheckAppOwnershipResponse_properties_appownership = y.object({
+	ownsApp: y.boolean().required(),
+	timeAcquired: y.number().required(),
+	ownerSteamID: y.string().required(),
+	sitelicense: y.boolean().required().optional(),
+});
 
-export type PlayerSummary_properties_profileurl = y.InferType<
-	typeof PlayerSummary_properties_profileurl
+export type CheckAppOwnershipResponse = y.InferType<
+	typeof CheckAppOwnershipResponse
 >;
-export const PlayerSummary_properties_profileurl = y.string().required();
+export const CheckAppOwnershipResponse = y.object({
+	appownership: CheckAppOwnershipResponse_properties_appownership,
+});
 
-export type PlayerSummary_properties_avatar = y.InferType<
-	typeof PlayerSummary_properties_avatar
+export type GetDeletedSteamIDsRequest = y.InferType<
+	typeof GetDeletedSteamIDsRequest
 >;
-export const PlayerSummary_properties_avatar = y.string().required();
+export const GetDeletedSteamIDsRequest = y.object({
+	key: y.string().required(),
+	rowversion: y.string().required(),
+});
 
-export type PlayerSummary_properties_avatarmedium = y.InferType<
-	typeof PlayerSummary_properties_avatarmedium
+export type DeletedSteamID = y.InferType<typeof DeletedSteamID>;
+export const DeletedSteamID = y.object({
+	steamid: y.string().required(),
+});
+
+export type GetDeletedSteamIDsResponse_properties_response = y.InferType<
+	typeof GetDeletedSteamIDsResponse_properties_response
 >;
-export const PlayerSummary_properties_avatarmedium = y.string().required();
+export const GetDeletedSteamIDsResponse_properties_response = y.object({
+	deletedids: y.array(DeletedSteamID),
+	rowversion: y.string().required(),
+});
 
-export type PlayerSummary_properties_avatarfull = y.InferType<
-	typeof PlayerSummary_properties_avatarfull
+export type GetDeletedSteamIDsResponse = y.InferType<
+	typeof GetDeletedSteamIDsResponse
 >;
-export const PlayerSummary_properties_avatarfull = y.string().required();
+export const GetDeletedSteamIDsResponse = y.object({
+	response: GetDeletedSteamIDsResponse_properties_response,
+});
 
-export type PlayerSummary_properties_personastate = y.InferType<
-	typeof PlayerSummary_properties_personastate
+export type GetUserGroupListRequest = y.InferType<
+	typeof GetUserGroupListRequest
 >;
-export const PlayerSummary_properties_personastate = y
-	.number()
-	.required()
-	.min(0)
-	.max(6);
+export const GetUserGroupListRequest = y.object({
+	key: y.string().required(),
+	steamid: y.string().required(),
+});
 
-export type PlayerSummary_properties_timecreated = y.InferType<
-	typeof PlayerSummary_properties_timecreated
+export type UserGroup = y.InferType<typeof UserGroup>;
+export const UserGroup = y.object({
+	gid: y.string().required(),
+});
+
+export type GetUserGroupListResponse_properties_response = y.InferType<
+	typeof GetUserGroupListResponse_properties_response
 >;
-export const PlayerSummary_properties_timecreated = y.number().required();
+export const GetUserGroupListResponse_properties_response = y.object({
+	success: y.boolean().required(),
+	groups: y.array(UserGroup),
+});
 
-export type PlayerSummary_properties_realname = y.InferType<
-	typeof PlayerSummary_properties_realname
+export type GetUserGroupListResponse = y.InferType<
+	typeof GetUserGroupListResponse
 >;
-export const PlayerSummary_properties_realname = y.string().required().min(1);
-
-export type PlayerSummary_properties_loccountrycode = y.InferType<
-	typeof PlayerSummary_properties_loccountrycode
->;
-export const PlayerSummary_properties_loccountrycode = y
-	.string()
-	.required()
-	.max(2)
-	.min(2);
-
-export type PlayerSummary_properties_locstatecode = y.InferType<
-	typeof PlayerSummary_properties_locstatecode
->;
-export const PlayerSummary_properties_locstatecode = y
-	.string()
-	.required()
-	.max(2)
-	.min(2);
-
-export type PlayerSummary_properties_loccityid = y.InferType<
-	typeof PlayerSummary_properties_loccityid
->;
-export const PlayerSummary_properties_loccityid = y.number().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_communityvisibilitystate =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_communityvisibilitystate
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_communityvisibilitystate =
-	y.number().required().min(0).max(5);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profilestate =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profilestate
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profilestate =
-	y.number().required().min(0).max(1);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personaname =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personaname
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personaname =
-	y.string().required().max(32).min(1);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_lastlogoff =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_lastlogoff
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_lastlogoff =
-	y.number().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profileurl =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profileurl
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_profileurl =
-	y.string().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatar =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatar
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatar =
-	y.string().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarmedium =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarmedium
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarmedium =
-	y.string().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarfull =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarfull
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_avatarfull =
-	y.string().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personastate =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personastate
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_personastate =
-	y.number().required().min(0).max(6);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_timecreated =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_timecreated
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_timecreated =
-	y.number().required();
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_realname =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_realname
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_realname =
-	y.string().required().min(1);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccountrycode =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccountrycode
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccountrycode =
-	y.string().required().max(2).min(2);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_locstatecode =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_locstatecode
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_locstatecode =
-	y.string().required().max(2).min(2);
-
-export type GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccityid =
-	y.InferType<
-		typeof GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccityid
-	>;
-export const GetPlayerSummariesResponse_properties_response_properties_players_items_properties_loccityid =
-	y.number().required();
-
-export type CheckAppOwnershipRequest_properties_key = y.InferType<
-	typeof CheckAppOwnershipRequest_properties_key
->;
-export const CheckAppOwnershipRequest_properties_key = y.string().required();
-
-export type CheckAppOwnershipRequest_properties_appid = y.InferType<
-	typeof CheckAppOwnershipRequest_properties_appid
->;
-export const CheckAppOwnershipRequest_properties_appid = y
-	.number()
-	.required()
-	.min(1);
-
-export type CheckAppOwnershipResponse_properties_appownership_properties_ownsApp =
-	y.InferType<
-		typeof CheckAppOwnershipResponse_properties_appownership_properties_ownsApp
-	>;
-export const CheckAppOwnershipResponse_properties_appownership_properties_ownsApp =
-	y.boolean().required();
-
-export type CheckAppOwnershipResponse_properties_appownership_properties_timeAcquired =
-	y.InferType<
-		typeof CheckAppOwnershipResponse_properties_appownership_properties_timeAcquired
-	>;
-export const CheckAppOwnershipResponse_properties_appownership_properties_timeAcquired =
-	y.number().required();
-
-export type CheckAppOwnershipResponse_properties_appownership_properties_sitelicense =
-	y.InferType<
-		typeof CheckAppOwnershipResponse_properties_appownership_properties_sitelicense
-	>;
-export const CheckAppOwnershipResponse_properties_appownership_properties_sitelicense =
-	y.boolean().required();
-
-export type GetDeletedSteamIDsRequest_properties_key = y.InferType<
-	typeof GetDeletedSteamIDsRequest_properties_key
->;
-export const GetDeletedSteamIDsRequest_properties_key = y.string().required();
-
-export type GetUserGroupListRequest_properties_key = y.InferType<
-	typeof GetUserGroupListRequest_properties_key
->;
-export const GetUserGroupListRequest_properties_key = y.string().required();
-
-export type GetUserGroupListResponse_properties_response_properties_success =
-	y.InferType<
-		typeof GetUserGroupListResponse_properties_response_properties_success
-	>;
-export const GetUserGroupListResponse_properties_response_properties_success = y
-	.boolean()
-	.required();
+export const GetUserGroupListResponse = y.object({
+	response: GetUserGroupListResponse_properties_response,
+});
 
 export type ResolveVanityURLRequest = y.InferType<
 	typeof ResolveVanityURLRequest
@@ -255,126 +127,65 @@ export const ResolveVanityURLRequest = y.object({
 	url_type: y.number().required().min(1).max(3).optional(),
 });
 
-export type ResolveVanityURLResponse_properties_response_properties_success =
-	y.InferType<
-		typeof ResolveVanityURLResponse_properties_response_properties_success
-	>;
-export const ResolveVanityURLResponse_properties_response_properties_success = y
-	.number()
-	.required()
-	.min(1);
-
-export type ResolveVanityURLResponse_properties_response_properties_message =
-	y.InferType<
-		typeof ResolveVanityURLResponse_properties_response_properties_message
-	>;
-export const ResolveVanityURLResponse_properties_response_properties_message = y
-	.string()
-	.required();
-
-export type GetFriendListRequest_properties_key = y.InferType<
-	typeof GetFriendListRequest_properties_key
+export type ResolveVanityURLResponse_properties_response = y.InferType<
+	typeof ResolveVanityURLResponse_properties_response
 >;
-export const GetFriendListRequest_properties_key = y.string().required();
+export const ResolveVanityURLResponse_properties_response = y.object({
+	steamid: y.string().required().optional(),
+	success: y.number().required().min(1),
+	message: y.string().required().optional(),
+});
 
-export type GetFriendListRequest_properties_relationship = y.InferType<
-	typeof GetFriendListRequest_properties_relationship
+export type ResolveVanityURLResponse = y.InferType<
+	typeof ResolveVanityURLResponse
 >;
-export const GetFriendListRequest_properties_relationship = y
-	.string()
-	.required();
+export const ResolveVanityURLResponse = y.object({
+	response: ResolveVanityURLResponse_properties_response,
+});
 
-export type Friend_properties_relationship = y.InferType<
-	typeof Friend_properties_relationship
+export type GetFriendListRequest = y.InferType<typeof GetFriendListRequest>;
+export const GetFriendListRequest = y.object({
+	key: y.string().required(),
+	steamid: y.string().required(),
+	relationship: y.string().required().optional(),
+});
+
+export type Friend = y.InferType<typeof Friend>;
+export const Friend = y.object({
+	steamid: y.string().required(),
+	relationship: y.string().required(),
+	friend_since: y.number().required(),
+});
+
+export type GetFriendListResponse_properties_friendslist = y.InferType<
+	typeof GetFriendListResponse_properties_friendslist
 >;
-export const Friend_properties_relationship = y.string().required();
+export const GetFriendListResponse_properties_friendslist = y.object({
+	friends: y.array(Friend),
+});
 
-export type Friend_properties_friend_since = y.InferType<
-	typeof Friend_properties_friend_since
->;
-export const Friend_properties_friend_since = y.number().required();
+export type GetFriendListResponse = y.InferType<typeof GetFriendListResponse>;
+export const GetFriendListResponse = y.object({
+	friendslist: GetFriendListResponse_properties_friendslist,
+});
 
-export type GetFriendListResponse_properties_friendslist_properties_friends_items_properties_relationship =
-	y.InferType<
-		typeof GetFriendListResponse_properties_friendslist_properties_friends_items_properties_relationship
-	>;
-export const GetFriendListResponse_properties_friendslist_properties_friends_items_properties_relationship =
-	y.string().required();
+export type GetPlayerBansRequest = y.InferType<typeof GetPlayerBansRequest>;
+export const GetPlayerBansRequest = y.object({
+	key: y.string().required(),
+	steamids: y.string().required(),
+});
 
-export type GetFriendListResponse_properties_friendslist_properties_friends_items_properties_friend_since =
-	y.InferType<
-		typeof GetFriendListResponse_properties_friendslist_properties_friends_items_properties_friend_since
-	>;
-export const GetFriendListResponse_properties_friendslist_properties_friends_items_properties_friend_since =
-	y.number().required();
+export type PlayerBan = y.InferType<typeof PlayerBan>;
+export const PlayerBan = y.object({
+	SteamId: y.string().required(),
+	CommunityBanned: y.boolean().required(),
+	VACBanned: y.boolean().required(),
+	NumberOfVACBans: y.number().required().min(0),
+	DaysSinceLastBan: y.number().required().min(0),
+	EconomyBan: y.string().required(),
+});
 
-export type GetPlayerBansRequest_properties_key = y.InferType<
-	typeof GetPlayerBansRequest_properties_key
->;
-export const GetPlayerBansRequest_properties_key = y.string().required();
-
-export type PlayerBan_properties_CommunityBanned = y.InferType<
-	typeof PlayerBan_properties_CommunityBanned
->;
-export const PlayerBan_properties_CommunityBanned = y.boolean().required();
-
-export type PlayerBan_properties_VACBanned = y.InferType<
-	typeof PlayerBan_properties_VACBanned
->;
-export const PlayerBan_properties_VACBanned = y.boolean().required();
-
-export type PlayerBan_properties_NumberOfVACBans = y.InferType<
-	typeof PlayerBan_properties_NumberOfVACBans
->;
-export const PlayerBan_properties_NumberOfVACBans = y
-	.number()
-	.required()
-	.min(0);
-
-export type PlayerBan_properties_DaysSinceLastBan = y.InferType<
-	typeof PlayerBan_properties_DaysSinceLastBan
->;
-export const PlayerBan_properties_DaysSinceLastBan = y
-	.number()
-	.required()
-	.min(0);
-
-export type PlayerBan_properties_EconomyBan = y.InferType<
-	typeof PlayerBan_properties_EconomyBan
->;
-export const PlayerBan_properties_EconomyBan = y.string().required();
-
-export type GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
-	y.InferType<
-		typeof GetPlayerBansResponse_properties_players_items_properties_CommunityBanned
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_CommunityBanned =
-	y.boolean().required();
-
-export type GetPlayerBansResponse_properties_players_items_properties_VACBanned =
-	y.InferType<
-		typeof GetPlayerBansResponse_properties_players_items_properties_VACBanned
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_VACBanned =
-	y.boolean().required();
-
-export type GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
-	y.InferType<
-		typeof GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_NumberOfVACBans =
-	y.number().required().min(0);
-
-export type GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
-	y.InferType<
-		typeof GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_DaysSinceLastBan =
-	y.number().required().min(0);
-
-export type GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
-	y.InferType<
-		typeof GetPlayerBansResponse_properties_players_items_properties_EconomyBan
-	>;
-export const GetPlayerBansResponse_properties_players_items_properties_EconomyBan =
-	y.string().required();
+export type GetPlayerBansResponse = y.InferType<typeof GetPlayerBansResponse>;
+export const GetPlayerBansResponse = y.object({
+	players: y.array(PlayerBan),
+});

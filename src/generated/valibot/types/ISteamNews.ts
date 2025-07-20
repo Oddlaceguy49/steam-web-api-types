@@ -12,131 +12,30 @@ export const GetNewsForAppRequest = v.object({
 	tags: v.optional(v.string()),
 });
 
-export type NewsItem_properties_title = v.InferOutput<
-	typeof NewsItem_properties_title
+export type NewsItem = v.InferOutput<typeof NewsItem>;
+export const NewsItem = v.object({
+	gid: v.string(),
+	title: v.string(),
+	url: v.string(),
+	is_external_url: v.boolean(),
+	author: v.string(),
+	contents: v.string(),
+	feedlabel: v.string(),
+	date: v.number(),
+	feedname: v.string(),
+	feed_type: v.number(),
+	appid: v.pipe(v.number(), v.minValue(1)),
+});
+
+export type GetNewsForAppResponse_properties_appnews = v.InferOutput<
+	typeof GetNewsForAppResponse_properties_appnews
 >;
-export const NewsItem_properties_title = v.string();
+export const GetNewsForAppResponse_properties_appnews = v.object({
+	appid: v.pipe(v.number(), v.minValue(1)),
+	newsitems: v.array(NewsItem),
+});
 
-export type NewsItem_properties_url = v.InferOutput<
-	typeof NewsItem_properties_url
->;
-export const NewsItem_properties_url = v.string();
-
-export type NewsItem_properties_is_external_url = v.InferOutput<
-	typeof NewsItem_properties_is_external_url
->;
-export const NewsItem_properties_is_external_url = v.boolean();
-
-export type NewsItem_properties_author = v.InferOutput<
-	typeof NewsItem_properties_author
->;
-export const NewsItem_properties_author = v.string();
-
-export type NewsItem_properties_contents = v.InferOutput<
-	typeof NewsItem_properties_contents
->;
-export const NewsItem_properties_contents = v.string();
-
-export type NewsItem_properties_feedlabel = v.InferOutput<
-	typeof NewsItem_properties_feedlabel
->;
-export const NewsItem_properties_feedlabel = v.string();
-
-export type NewsItem_properties_date = v.InferOutput<
-	typeof NewsItem_properties_date
->;
-export const NewsItem_properties_date = v.number();
-
-export type NewsItem_properties_feedname = v.InferOutput<
-	typeof NewsItem_properties_feedname
->;
-export const NewsItem_properties_feedname = v.string();
-
-export type NewsItem_properties_feed_type = v.InferOutput<
-	typeof NewsItem_properties_feed_type
->;
-export const NewsItem_properties_feed_type = v.number();
-
-export type NewsItem_properties_appid = v.InferOutput<
-	typeof NewsItem_properties_appid
->;
-export const NewsItem_properties_appid = v.pipe(v.number(), v.minValue(1));
-
-export type GetNewsForAppResponse_properties_appnews_properties_appid =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_appid
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_appid = v.pipe(
-	v.number(),
-	v.minValue(1)
-);
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
-	v.boolean();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
-	v.number();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
-	v.string();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
-	v.number();
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
-	v.InferOutput<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
-	v.pipe(v.number(), v.minValue(1));
+export type GetNewsForAppResponse = v.InferOutput<typeof GetNewsForAppResponse>;
+export const GetNewsForAppResponse = v.object({
+	appnews: GetNewsForAppResponse_properties_appnews,
+});

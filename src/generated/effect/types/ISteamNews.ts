@@ -13,126 +13,30 @@ export const GetNewsForAppRequest = ES.Struct({
 	tags: ES.optional(ES.String),
 });
 
-export type NewsItem_properties_title = ET.Type<
-	typeof NewsItem_properties_title
+export type NewsItem = ET.Type<typeof NewsItem>;
+export const NewsItem = ES.Struct({
+	gid: ES.String,
+	title: ES.String,
+	url: ES.String,
+	is_external_url: ES.Boolean,
+	author: ES.String,
+	contents: ES.String,
+	feedlabel: ES.String,
+	date: ES.Number,
+	feedname: ES.String,
+	feed_type: ES.Number,
+	appid: ES.Number.pipe(ES.greaterThanOrEqualTo(1)),
+});
+
+export type GetNewsForAppResponse_properties_appnews = ET.Type<
+	typeof GetNewsForAppResponse_properties_appnews
 >;
-export const NewsItem_properties_title = ES.String;
+export const GetNewsForAppResponse_properties_appnews = ES.Struct({
+	appid: ES.Number.pipe(ES.greaterThanOrEqualTo(1)),
+	newsitems: ES.Array(NewsItem),
+});
 
-export type NewsItem_properties_url = ET.Type<typeof NewsItem_properties_url>;
-export const NewsItem_properties_url = ES.String;
-
-export type NewsItem_properties_is_external_url = ET.Type<
-	typeof NewsItem_properties_is_external_url
->;
-export const NewsItem_properties_is_external_url = ES.Boolean;
-
-export type NewsItem_properties_author = ET.Type<
-	typeof NewsItem_properties_author
->;
-export const NewsItem_properties_author = ES.String;
-
-export type NewsItem_properties_contents = ET.Type<
-	typeof NewsItem_properties_contents
->;
-export const NewsItem_properties_contents = ES.String;
-
-export type NewsItem_properties_feedlabel = ET.Type<
-	typeof NewsItem_properties_feedlabel
->;
-export const NewsItem_properties_feedlabel = ES.String;
-
-export type NewsItem_properties_date = ET.Type<typeof NewsItem_properties_date>;
-export const NewsItem_properties_date = ES.Number;
-
-export type NewsItem_properties_feedname = ET.Type<
-	typeof NewsItem_properties_feedname
->;
-export const NewsItem_properties_feedname = ES.String;
-
-export type NewsItem_properties_feed_type = ET.Type<
-	typeof NewsItem_properties_feed_type
->;
-export const NewsItem_properties_feed_type = ES.Number;
-
-export type NewsItem_properties_appid = ET.Type<
-	typeof NewsItem_properties_appid
->;
-export const NewsItem_properties_appid = ES.Number.pipe(
-	ES.greaterThanOrEqualTo(1)
-);
-
-export type GetNewsForAppResponse_properties_appnews_properties_appid = ET.Type<
-	typeof GetNewsForAppResponse_properties_appnews_properties_appid
->;
-export const GetNewsForAppResponse_properties_appnews_properties_appid =
-	ES.Number.pipe(ES.greaterThanOrEqualTo(1));
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_title =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_url =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_is_external_url =
-	ES.Boolean;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_author =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_contents =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedlabel =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_date =
-	ES.Number;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feedname =
-	ES.String;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_feed_type =
-	ES.Number;
-
-export type GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
-	ET.Type<
-		typeof GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid
-	>;
-export const GetNewsForAppResponse_properties_appnews_properties_newsitems_items_properties_appid =
-	ES.Number.pipe(ES.greaterThanOrEqualTo(1));
+export type GetNewsForAppResponse = ET.Type<typeof GetNewsForAppResponse>;
+export const GetNewsForAppResponse = ES.Struct({
+	appnews: GetNewsForAppResponse_properties_appnews,
+});

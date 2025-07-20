@@ -4,7 +4,7 @@
  */
 export interface GetRecentlyPlayedGamesRequest {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;

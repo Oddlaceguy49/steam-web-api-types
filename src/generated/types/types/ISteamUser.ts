@@ -6,7 +6,7 @@
  */
 export interface PlayerSummary {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The player's 64-bit SteamID.
 	 */
 	steamid: string;
@@ -60,7 +60,7 @@ export interface PlayerSummary {
 	 */
 	personastate: number;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit ID of the player's primary clan.
 	 */
 	primaryclanid?: string;
@@ -92,6 +92,10 @@ export interface PlayerSummary {
 	loccityid?: number;
 }
 
+export interface GetPlayerSummariesResponse_properties_response {
+	players: PlayerSummary[];
+}
+
 /*** The full response from the ISteamUser/GetPlayerSummaries/v2 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
  * @description Response containing player summary information.
@@ -107,7 +111,7 @@ export interface GetPlayerSummariesResponse {
 export interface CheckAppOwnershipRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
@@ -116,6 +120,23 @@ export interface CheckAppOwnershipRequest {
 	 * @description The AppID of the game.
 	 */
 	appid: number;
+}
+
+export interface CheckAppOwnershipResponse_properties_appownership {
+	/** @description True if the user owns the app, false otherwise. */
+	ownsApp: boolean;
+	/**
+	 * @format unix-timestamp
+	 * @description The time the app was acquired by the user.
+	 */
+	timeAcquired: number;
+	/**
+	 * @pattern "^[0-9]{17}$"
+	 * @description The 64-bit SteamID of the true owner (if family shared).
+	 */
+	ownerSteamID: string;
+	/** @description True if the app is accessed via site license (PC Cafe program). */
+	sitelicense?: boolean;
 }
 
 /*** The response from the ISteamUser/CheckAppOwnership/v4 endpoint.
@@ -133,7 +154,7 @@ export interface CheckAppOwnershipResponse {
 export interface GetDeletedSteamIDsRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]+$
+	 * @pattern "^[0-9]+$"
 	 * @description An unsigned 64-bit value for pagination.
 	 */
 	rowversion: string; // uint64 is represented as string in TypeScript
@@ -144,10 +165,19 @@ export interface GetDeletedSteamIDsRequest {
  */
 export interface DeletedSteamID {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the deleted account.
 	 */
 	steamid: string;
+}
+
+export interface GetDeletedSteamIDsResponse_properties_response {
+	deletedids: DeletedSteamID[];
+	/**
+	 * @pattern "^[0-9]+$"
+	 * @description The rowversion for the next request.
+	 */
+	rowversion: string;
 }
 
 /*** The response from the ISteamUser/GetDeletedSteamIDs/v1 endpoint.
@@ -165,7 +195,7 @@ export interface GetDeletedSteamIDsResponse {
 export interface GetUserGroupListRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
@@ -176,10 +206,16 @@ export interface GetUserGroupListRequest {
  */
 export interface UserGroup {
 	/**
-	 * @pattern ^[0-9]+$
+	 * @pattern "^[0-9]+$"
 	 * @description The 64-bit ID of the group.
 	 */
 	gid: string;
+}
+
+export interface GetUserGroupListResponse_properties_response {
+	/** @description True if the request was successful. */
+	success: boolean;
+	groups: UserGroup[];
 }
 
 /*** The response from the ISteamUser/GetUserGroupList/v1 endpoint.
@@ -209,6 +245,21 @@ export interface ResolveVanityURLRequest {
 	url_type?: number;
 }
 
+export interface ResolveVanityURLResponse_properties_response {
+	/**
+	 * @pattern "^[0-9]{17}$"
+	 * @description The 64-bit SteamID if resolved successfully.
+	 */
+	steamid?: string;
+	/**
+	 * @minimum 1
+	 * @description The success status (1 = success, 42 = no match).
+	 */
+	success: number;
+	/** @description A message describing the status. */
+	message?: string;
+}
+
 /*** The response from the ISteamUser/ResolveVanityURL/v1 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/ISteamUser#ResolveVanityURL
  * @description Response containing the resolved SteamID from a vanity URL.
@@ -224,12 +275,12 @@ export interface ResolveVanityURLResponse {
 export interface GetFriendListRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
 	/**
-	 * @pattern ^(all|friend)$
+	 * @pattern "^(all|friend)$"
 	 * @description Filter by relationship type (all or friend).
 	 */
 	relationship?: string;
@@ -240,12 +291,12 @@ export interface GetFriendListRequest {
  */
 export interface Friend {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the friend.
 	 */
 	steamid: string;
 	/**
-	 * @pattern ^(friend)$
+	 * @pattern "^(friend)$"
 	 * @description The relationship type (always 'friend').
 	 */
 	relationship: string;
@@ -254,6 +305,10 @@ export interface Friend {
 	 * @description The Unix timestamp of when the friendship was created.
 	 */
 	friend_since: number;
+}
+
+export interface GetFriendListResponse_properties_friendslist {
+	friends: Friend[];
 }
 
 /*** The response from the ISteamUser/GetFriendList/v1 endpoint.
@@ -271,7 +326,7 @@ export interface GetFriendListResponse {
 export interface GetPlayerBansRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9,]+$
+	 * @pattern "^[0-9,]+$"
 	 * @description Comma-separated list of 64-bit SteamIDs.
 	 */
 	steamids: string; // Comma-separated list of 64-bit SteamIDs
@@ -282,7 +337,7 @@ export interface GetPlayerBansRequest {
  */
 export interface PlayerBan {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The player's 64-bit SteamID.
 	 */
 	SteamId: string;
@@ -305,7 +360,7 @@ export interface PlayerBan {
 	 */
 	DaysSinceLastBan: number;
 	/**
-	 * @pattern ^(none|probation|banned)$
+	 * @pattern "^(none|probation|banned)$"
 	 * @description The player's economy ban status.
 	 */
 	EconomyBan: string;
@@ -317,59 +372,4 @@ export interface PlayerBan {
  */
 export interface GetPlayerBansResponse {
 	players: PlayerBan[];
-}
-
-export interface GetPlayerSummariesResponse_properties_response {
-	players: PlayerSummary[];
-}
-
-export interface CheckAppOwnershipResponse_properties_appownership {
-	/** @description True if the user owns the app, false otherwise. */
-	ownsApp: boolean;
-	/**
-	 * @format unix-timestamp
-	 * @description The time the app was acquired by the user.
-	 */
-	timeAcquired: number;
-	/**
-	 * @pattern ^[0-9]{17}$
-	 * @description The 64-bit SteamID of the true owner (if family shared).
-	 */
-	ownerSteamID: string;
-	/** @description True if the app is accessed via site license (PC Cafe program). */
-	sitelicense?: boolean;
-}
-
-export interface GetDeletedSteamIDsResponse_properties_response {
-	deletedids: DeletedSteamID[];
-	/**
-	 * @pattern ^[0-9]+$
-	 * @description The rowversion for the next request.
-	 */
-	rowversion: string;
-}
-
-export interface GetUserGroupListResponse_properties_response {
-	/** @description True if the request was successful. */
-	success: boolean;
-	groups: UserGroup[];
-}
-
-export interface ResolveVanityURLResponse_properties_response {
-	/**
-	 * @pattern ^[0-9]{17}$
-	 * @description The 64-bit SteamID if resolved successfully.
-	 */
-	steamid?: string;
-	/**
-	 * @minimum 1
-	 * @description The success status (1 = success, 42 = no match).
-	 */
-	success: number;
-	/** @description A message describing the status. */
-	message?: string;
-}
-
-export interface GetFriendListResponse_properties_friendslist {
-	friends: Friend[];
 }

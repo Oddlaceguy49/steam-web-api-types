@@ -1,11 +1,6 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT.
 
 export {
-	AuthenticateUserTicketRequest,
-	AuthenticateUserTicketResponse,
-} from "./types/ISteamUserAuth";
-
-export {
 	PlayerSummary,
 	GetPlayerSummariesResponse,
 	CheckAppOwnershipRequest,
@@ -24,16 +19,4 @@ export {
 	GetPlayerBansRequest,
 	PlayerBan,
 	GetPlayerBansResponse,
-} from "./types/ISteamUser";
-
-export {
-	GetNewsForAppRequest,
-	NewsItem,
-	GetNewsForAppResponse,
-} from "./types/ISteamNews";
-
-export {
-	GetRecentlyPlayedGamesRequest,
-	RecentlyPlayedGame,
-	GetRecentlyPlayedGamesResponse,
-} from "./types/IPlayerService";
+} from "./../types/ISteamUser";

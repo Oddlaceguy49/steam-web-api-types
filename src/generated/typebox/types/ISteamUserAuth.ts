@@ -30,33 +30,37 @@ export const AuthenticateUserTicketRequest = Type.Object(
 	}
 );
 
+export type AuthenticateUserTicketResponse_properties_response_properties_error =
+	Static<
+		typeof AuthenticateUserTicketResponse_properties_response_properties_error
+	>;
+export const AuthenticateUserTicketResponse_properties_response_properties_error =
+	Type.Object({
+		errorcode: Type.Number(),
+		errordesc: Type.String({
+			minLength: 1,
+			description: "Error description if authentication fails.",
+		}),
+	});
+
+export type AuthenticateUserTicketResponse_properties_response = Static<
+	typeof AuthenticateUserTicketResponse_properties_response
+>;
+export const AuthenticateUserTicketResponse_properties_response = Type.Object({
+	steamid: Type.Optional(
+		Type.String({ pattern: "^[0-9]{17}$", description: "The user's 64" })
+	),
+	error: Type.Optional(
+		AuthenticateUserTicketResponse_properties_response_properties_error
+	),
+});
+
 export type AuthenticateUserTicketResponse = Static<
 	typeof AuthenticateUserTicketResponse
 >;
 export const AuthenticateUserTicketResponse = Type.Object(
 	{
-		response: Type.Object(
-			{
-				steamid: Type.Optional(
-					Type.String({ pattern: "^[0", description: "The user's 64" })
-				),
-				error: Type.Optional(
-					Type.Object(
-						{
-							errorcode: Type.Number({
-								description: "Error code if authentication fails.",
-							}),
-							errordesc: Type.String({
-								minLength: 1,
-								description: "Error description if authentication fails.",
-							}),
-						},
-						{ description: "Error code if authentication fails." }
-					)
-				),
-			},
-			{ pattern: "^[0", description: "The user's 64" }
-		),
+		response: AuthenticateUserTicketResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket",

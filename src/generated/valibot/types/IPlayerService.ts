@@ -2,13 +2,13 @@
 
 import * as v from "valibot";
 
-export type GetRecentlyPlayedGamesRequest_properties_count = v.InferOutput<
-	typeof GetRecentlyPlayedGamesRequest_properties_count
+export type GetRecentlyPlayedGamesRequest = v.InferOutput<
+	typeof GetRecentlyPlayedGamesRequest
 >;
-export const GetRecentlyPlayedGamesRequest_properties_count = v.pipe(
-	v.number(),
-	v.minValue(0)
-);
+export const GetRecentlyPlayedGamesRequest = v.object({
+	steamid: v.string(),
+	count: v.optional(v.pipe(v.number(), v.minValue(0))),
+});
 
 export type RecentlyPlayedGame = v.InferOutput<typeof RecentlyPlayedGame>;
 export const RecentlyPlayedGame = v.object({
@@ -21,12 +21,17 @@ export const RecentlyPlayedGame = v.object({
 	has_community_visible_stats: v.boolean(),
 });
 
+export type GetRecentlyPlayedGamesResponse_properties_response = v.InferOutput<
+	typeof GetRecentlyPlayedGamesResponse_properties_response
+>;
+export const GetRecentlyPlayedGamesResponse_properties_response = v.object({
+	total_count: v.pipe(v.number(), v.minValue(0)),
+	games: v.array(RecentlyPlayedGame),
+});
+
 export type GetRecentlyPlayedGamesResponse = v.InferOutput<
 	typeof GetRecentlyPlayedGamesResponse
 >;
 export const GetRecentlyPlayedGamesResponse = v.object({
-	response: v.object({
-		total_count: v.pipe(v.number(), v.minValue(0)),
-		games: v.array(RecentlyPlayedGame),
-	}),
+	response: GetRecentlyPlayedGamesResponse_properties_response,
 });

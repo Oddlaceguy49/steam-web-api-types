@@ -40,7 +40,7 @@ export interface GetNewsForAppRequest {
  */
 export interface NewsItem {
 	/**
-	 * @pattern ^[0-9]+$
+	 * @pattern "^[0-9]+$"
 	 * @description The unique ID of the news item.
 	 */
 	gid: string;
@@ -89,14 +89,6 @@ export interface NewsItem {
 	appid: number;
 }
 
-/*** The response from the ISteamNews/GetNewsForApp/v2 endpoint.
- * @see https://partner.steamgames.com/doc/webapi/ISteamNews#GetNewsForApp
- * @description Response containing news items for a specific app.
- */
-export interface GetNewsForAppResponse {
-	appnews: GetNewsForAppResponse_properties_appnews;
-}
-
 export interface GetNewsForAppResponse_properties_appnews {
 	/**
 	 * @minimum 1
@@ -104,4 +96,12 @@ export interface GetNewsForAppResponse_properties_appnews {
 	 */
 	appid: number;
 	newsitems: NewsItem[];
+}
+
+/*** The response from the ISteamNews/GetNewsForApp/v2 endpoint.
+ * @see https://partner.steamgames.com/doc/webapi/ISteamNews#GetNewsForApp
+ * @description Response containing news items for a specific app.
+ */
+export interface GetNewsForAppResponse {
+	appnews: GetNewsForAppResponse_properties_appnews;
 }

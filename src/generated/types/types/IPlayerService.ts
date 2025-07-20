@@ -6,7 +6,7 @@
  */
 export interface GetRecentlyPlayedGamesRequest {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
@@ -56,14 +56,6 @@ export interface RecentlyPlayedGame {
 	has_community_visible_stats: boolean;
 }
 
-/*** The response from the ISteamService/GetRecentlyPlayedGames/v1 endpoint.
- * @see https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames
- * @description Response containing recently played games for a user.
- */
-export interface GetRecentlyPlayedGamesResponse {
-	response: GetRecentlyPlayedGamesResponse_properties_response;
-}
-
 export interface GetRecentlyPlayedGamesResponse_properties_response {
 	/**
 	 * @minimum 0
@@ -71,4 +63,12 @@ export interface GetRecentlyPlayedGamesResponse_properties_response {
 	 */
 	total_count: number;
 	games: RecentlyPlayedGame[];
+}
+
+/*** The response from the ISteamService/GetRecentlyPlayedGames/v1 endpoint.
+ * @see https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames
+ * @description Response containing recently played games for a user.
+ */
+export interface GetRecentlyPlayedGamesResponse {
+	response: GetRecentlyPlayedGamesResponse_properties_response;
 }

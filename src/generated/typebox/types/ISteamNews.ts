@@ -41,7 +41,7 @@ export type NewsItem = Static<typeof NewsItem>;
 export const NewsItem = Type.Object(
 	{
 		gid: Type.String({
-			pattern: "^[0",
+			pattern: "^[0-9]+$",
 			description: "The unique ID of the news item.",
 		}),
 		title: Type.String({ description: "The title of the news item." }),
@@ -71,19 +71,18 @@ export const NewsItem = Type.Object(
 	{ description: "A single news item for a Steam app." }
 );
 
+export type GetNewsForAppResponse_properties_appnews = Static<
+	typeof GetNewsForAppResponse_properties_appnews
+>;
+export const GetNewsForAppResponse_properties_appnews = Type.Object({
+	appid: Type.Number({ minimum: 1, description: "The AppID of the game." }),
+	newsitems: Type.Array(NewsItem),
+});
+
 export type GetNewsForAppResponse = Static<typeof GetNewsForAppResponse>;
 export const GetNewsForAppResponse = Type.Object(
 	{
-		appnews: Type.Object(
-			{
-				appid: Type.Number({
-					minimum: 1,
-					description: "The AppID of the game.",
-				}),
-				newsitems: Type.Array(NewsItem),
-			},
-			{ minimum: 1, description: "The AppID of the game." }
-		),
+		appnews: GetNewsForAppResponse_properties_appnews,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/ISteamNews#GetNewsForApp",

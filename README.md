@@ -23,7 +23,7 @@ It provides both pure TypeScript types for static analysis and optional schemas 
 
 ### Supported Schemas
 
--   [x] ArkType
+-   [ ] ArkType
 -   [x] Effect
 -   [ ] io-ts
 -   [ ] Javascript Transform
@@ -210,7 +210,6 @@ The validation schemas for this project are automatically generated from the bas
     -   Effect
     -   JSON Schema
     -   Yup
-    -   ArkType
 
     ***
 

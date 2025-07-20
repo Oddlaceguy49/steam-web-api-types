@@ -27,23 +27,6 @@ export interface AuthenticateUserTicketRequest {
 	identity?: string;
 }
 
-/*** The response from the ISteamUserAuth/AuthenticateUserTicket/v1 endpoint.
- * @see https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
- * @description Response from authenticating a user ticket.
- */
-export interface AuthenticateUserTicketResponse {
-	response: AuthenticateUserTicketResponse_properties_response;
-}
-
-export interface AuthenticateUserTicketResponse_properties_response {
-	/**
-	 * @pattern ^[0-9]{17}$
-	 * @description The user's 64-bit SteamID if the ticket is valid.
-	 */
-	steamid?: string;
-	error?: AuthenticateUserTicketResponse_properties_response_properties_error;
-}
-
 export interface AuthenticateUserTicketResponse_properties_response_properties_error {
 	/** @description Error code if authentication fails. */
 	errorcode: number;
@@ -52,4 +35,21 @@ export interface AuthenticateUserTicketResponse_properties_response_properties_e
 	 * @description Error description if authentication fails.
 	 */
 	errordesc: string;
+}
+
+export interface AuthenticateUserTicketResponse_properties_response {
+	/**
+	 * @pattern "^[0-9]{17}$"
+	 * @description The user's 64-bit SteamID if the ticket is valid.
+	 */
+	steamid?: string;
+	error?: AuthenticateUserTicketResponse_properties_response_properties_error;
+}
+
+/*** The response from the ISteamUserAuth/AuthenticateUserTicket/v1 endpoint.
+ * @see https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
+ * @description Response from authenticating a user ticket.
+ */
+export interface AuthenticateUserTicketResponse {
+	response: AuthenticateUserTicketResponse_properties_response;
 }

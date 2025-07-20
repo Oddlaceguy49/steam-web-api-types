@@ -7,7 +7,7 @@ export type GetRecentlyPlayedGamesRequest = Static<
 >;
 export const GetRecentlyPlayedGamesRequest = Type.Object(
 	{
-		steamid: Type.String({ pattern: "^[0", description: "The 64" }),
+		steamid: Type.String({ pattern: "^[0-9]{17}$", description: "The 64" }),
 		count: Type.Optional(
 			Type.Number({
 				minimum: 0,
@@ -49,21 +49,23 @@ export const RecentlyPlayedGame = Type.Object(
 	{ description: "Information about a recently played game." }
 );
 
+export type GetRecentlyPlayedGamesResponse_properties_response = Static<
+	typeof GetRecentlyPlayedGamesResponse_properties_response
+>;
+export const GetRecentlyPlayedGamesResponse_properties_response = Type.Object({
+	total_count: Type.Number({
+		minimum: 0,
+		description: "The total number of games.",
+	}),
+	games: Type.Array(RecentlyPlayedGame),
+});
+
 export type GetRecentlyPlayedGamesResponse = Static<
 	typeof GetRecentlyPlayedGamesResponse
 >;
 export const GetRecentlyPlayedGamesResponse = Type.Object(
 	{
-		response: Type.Object(
-			{
-				total_count: Type.Number({
-					minimum: 0,
-					description: "The total number of games.",
-				}),
-				games: Type.Array(RecentlyPlayedGame),
-			},
-			{ minimum: 0, description: "The total number of games." }
-		),
+		response: GetRecentlyPlayedGamesResponse_properties_response,
 	},
 	{
 		see: "https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames",

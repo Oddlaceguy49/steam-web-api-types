@@ -4,7 +4,7 @@
  */
 export interface PlayerSummary {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The player's 64-bit SteamID.
 	 */
 	steamid: string;
@@ -58,7 +58,7 @@ export interface PlayerSummary {
 	 */
 	personastate: number;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit ID of the player's primary clan.
 	 */
 	primaryclanid?: string;
@@ -107,7 +107,7 @@ export interface GetPlayerSummariesResponse {
 export interface CheckAppOwnershipRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
@@ -134,7 +134,7 @@ export interface CheckAppOwnershipResponse {
 		 */
 		timeAcquired: number;
 		/**
-		 * @pattern ^[0-9]{17}$
+		 * @pattern "^[0-9]{17}$"
 		 * @description The 64-bit SteamID of the true owner (if family shared).
 		 */
 		ownerSteamID: string;
@@ -152,7 +152,7 @@ export interface CheckAppOwnershipResponse {
 export interface GetDeletedSteamIDsRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]+$
+	 * @pattern "^[0-9]+$"
 	 * @description An unsigned 64-bit value for pagination.
 	 */
 	rowversion: string; // uint64 is represented as string in TypeScript
@@ -163,7 +163,7 @@ export interface GetDeletedSteamIDsRequest {
  */
 export interface DeletedSteamID {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the deleted account.
 	 */
 	steamid: string;
@@ -177,7 +177,7 @@ export interface GetDeletedSteamIDsResponse {
 	response: {
 		deletedids: DeletedSteamID[];
 		/**
-		 * @pattern ^[0-9]+$
+		 * @pattern "^[0-9]+$"
 		 * @description The rowversion for the next request.
 		 */
 		rowversion: string; // uint64 is represented as string in TypeScript
@@ -191,7 +191,7 @@ export interface GetDeletedSteamIDsResponse {
 export interface GetUserGroupListRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
@@ -202,7 +202,7 @@ export interface GetUserGroupListRequest {
  */
 export interface UserGroup {
 	/**
-	 * @pattern ^[0-9]+$
+	 * @pattern "^[0-9]+$"
 	 * @description The 64-bit ID of the group.
 	 */
 	gid: string;
@@ -248,7 +248,7 @@ export interface ResolveVanityURLRequest {
 export interface ResolveVanityURLResponse {
 	response: {
 		/**
-		 * @pattern ^[0-9]{17}$
+		 * @pattern "^[0-9]{17}$"
 		 * @description The 64-bit SteamID if resolved successfully.
 		 */
 		steamid?: string;
@@ -271,12 +271,12 @@ export interface ResolveVanityURLResponse {
 export interface GetFriendListRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the user.
 	 */
 	steamid: string;
 	/**
-	 * @pattern ^(all|friend)$
+	 * @pattern "^(all|friend)$"
 	 * @description Filter by relationship type (all or friend).
 	 */
 	relationship?: string;
@@ -287,12 +287,12 @@ export interface GetFriendListRequest {
  */
 export interface Friend {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The 64-bit SteamID of the friend.
 	 */
 	steamid: string;
 	/**
-	 * @pattern ^(friend)$
+	 * @pattern "^(friend)$"
 	 * @description The relationship type (always 'friend').
 	 */
 	relationship: string;
@@ -320,7 +320,7 @@ export interface GetFriendListResponse {
 export interface GetPlayerBansRequest {
 	key: string;
 	/**
-	 * @pattern ^[0-9,]+$
+	 * @pattern "^[0-9,]+$"
 	 * @description Comma-separated list of 64-bit SteamIDs.
 	 */
 	steamids: string; // Comma-separated list of 64-bit SteamIDs
@@ -331,7 +331,7 @@ export interface GetPlayerBansRequest {
  */
 export interface PlayerBan {
 	/**
-	 * @pattern ^[0-9]{17}$
+	 * @pattern "^[0-9]{17}$"
 	 * @description The player's 64-bit SteamID.
 	 */
 	SteamId: string;
@@ -354,7 +354,7 @@ export interface PlayerBan {
 	 */
 	DaysSinceLastBan: number;
 	/**
-	 * @pattern ^(none|probation|banned)$
+	 * @pattern "^(none|probation|banned)$"
 	 * @description The player's economy ban status.
 	 */
 	EconomyBan: string;

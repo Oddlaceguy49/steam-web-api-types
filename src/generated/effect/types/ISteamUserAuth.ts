@@ -22,3 +22,20 @@ export const AuthenticateUserTicketResponse_properties_response_properties_error
 		errorcode: ES.Number,
 		errordesc: ES.String.pipe(ES.minLength(1)),
 	});
+
+export type AuthenticateUserTicketResponse_properties_response = ET.Type<
+	typeof AuthenticateUserTicketResponse_properties_response
+>;
+export const AuthenticateUserTicketResponse_properties_response = ES.Struct({
+	steamid: ES.optional(ES.String),
+	error: ES.optional(
+		AuthenticateUserTicketResponse_properties_response_properties_error
+	),
+});
+
+export type AuthenticateUserTicketResponse = ET.Type<
+	typeof AuthenticateUserTicketResponse
+>;
+export const AuthenticateUserTicketResponse = ES.Struct({
+	response: AuthenticateUserTicketResponse_properties_response,
+});

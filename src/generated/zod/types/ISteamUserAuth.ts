@@ -21,3 +21,19 @@ export const AuthenticateUserTicketResponse_properties_response_properties_error
 		errorcode: z.number(),
 		errordesc: z.string().min(1),
 	});
+
+export type AuthenticateUserTicketResponse_properties_response = z.infer<
+	typeof AuthenticateUserTicketResponse_properties_response
+>;
+export const AuthenticateUserTicketResponse_properties_response = z.object({
+	steamid: z.string().optional(),
+	error:
+		AuthenticateUserTicketResponse_properties_response_properties_error.optional(),
+});
+
+export type AuthenticateUserTicketResponse = z.infer<
+	typeof AuthenticateUserTicketResponse
+>;
+export const AuthenticateUserTicketResponse = z.object({
+	response: AuthenticateUserTicketResponse_properties_response,
+});

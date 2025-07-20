@@ -9,7 +9,7 @@ const generators = {
 	zod: Codegen.ModelToZod,
 	valibot: Codegen.ModelToValibot,
 	yup: Codegen.ModelToYup,
-	arktype: Codegen.ModelToArkType,
+	// arktype: Codegen.ModelToArkType,
 	effect: Codegen.ModelToEffect,
 	jsonschema: Codegen.ModelToJsonSchema,
 	types: "types",
@@ -71,14 +71,17 @@ async function transformSourceText(
 			if (typeNode && Node.isTypeLiteral(typeNode)) {
 				const newInterfaceName = `${parentInterfaceName}_properties_${propName}`;
 
-				const newInterface = sourceFile.addInterface({
-					name: newInterfaceName,
-					isExported: true,
-					properties: typeNode
-						.getMembers()
-						.filter(Node.isPropertySignature)
-						.map((member) => member.getStructure()),
-				});
+				const newInterface = sourceFile.insertInterface(
+					currentInterface.getChildIndex(),
+					{
+						name: newInterfaceName,
+						isExported: true,
+						properties: typeNode
+							.getMembers()
+							.filter(Node.isPropertySignature)
+							.map((member) => member.getStructure()),
+					}
+				);
 
 				interfacesToProcess.push(newInterface);
 
@@ -170,20 +173,18 @@ async function main() {
 		let generatedCode: string = "";
 
 		const selectedGenerator = generators[targetPackage.toLowerCase()];
-		let transformedSourceText = sourceText;
-
-		// Apply transformation for all generators except 'types'
-		if (targetPackage.toLowerCase() !== "types") {
-			transformedSourceText = await transformSourceText(sourceText, inputFile);
-		}
+		const transformedSourceText = await transformSourceText(
+			sourceText,
+			inputFile
+		);
 
 		if (targetPackage.toLowerCase() === "typebox") {
 			generatedCode = Codegen.TypeScriptToTypeBox.Generate(
 				transformedSourceText
 			);
 		} else if (targetPackage.toLowerCase() === "types") {
-			// The 'types' generator already handles its own transformation internally
-			generatedCode = await transformSourceText(sourceText, inputFile);
+			// "types" is just the flattened version anyway
+			generatedCode = transformedSourceText;
 		} else {
 			const model = Codegen.TypeScriptToModel.Generate(transformedSourceText);
 			generatedCode = selectedGenerator.Generate(model);
@@ -196,6 +197,7 @@ async function main() {
 				);
 			}
 
+			// Currently broken, will fix later maybe?
 			if (targetPackage.toLowerCase() === "arktype") {
 				console.log("\n🔧 Fixing up generated ArkType code...");
 

@@ -2,10 +2,13 @@
 
 import { z } from "zod";
 
-export type GetRecentlyPlayedGamesRequest_properties_count = z.infer<
-	typeof GetRecentlyPlayedGamesRequest_properties_count
+export type GetRecentlyPlayedGamesRequest = z.infer<
+	typeof GetRecentlyPlayedGamesRequest
 >;
-export const GetRecentlyPlayedGamesRequest_properties_count = z.number().min(0);
+export const GetRecentlyPlayedGamesRequest = z.object({
+	steamid: z.string(),
+	count: z.number().min(0).optional(),
+});
 
 export type RecentlyPlayedGame = z.infer<typeof RecentlyPlayedGame>;
 export const RecentlyPlayedGame = z.object({
@@ -24,4 +27,11 @@ export type GetRecentlyPlayedGamesResponse_properties_response = z.infer<
 export const GetRecentlyPlayedGamesResponse_properties_response = z.object({
 	total_count: z.number().min(0),
 	games: z.array(RecentlyPlayedGame),
+});
+
+export type GetRecentlyPlayedGamesResponse = z.infer<
+	typeof GetRecentlyPlayedGamesResponse
+>;
+export const GetRecentlyPlayedGamesResponse = z.object({
+	response: GetRecentlyPlayedGamesResponse_properties_response,
 });
