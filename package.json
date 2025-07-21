@@ -1,143 +1,263 @@
 {
-  "name": "@oddlaceguy49/steam-web-api-types",
-  "version": "0.1.6",
-  "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
-  "type": "module",
-  "license": "MIT",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })\"",
-    "gen-script": "bun run scripts/generateSchemas.ts",
-    "gen:types": "bun run gen-script types",
-    "gen:zod": "bun run gen-script zod",
-    "gen:typebox": "bun run gen-script typebox",
-    "gen:valibot": "bun run gen-script valibot",
-    "gen:yup": "bun run gen-script yup",
-    "gen:effect": "bun run gen-script effect",
-    "gen:jsonschema": "bun run gen-script jsonschema",
-    "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build:types": "tsc",
-    "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
-    "build": "bun run gen && bun run build:types",
-    "prepublishOnly": "bun run build",
-    "publish": "npm publish --access public",
-    "release:patch": "npm version patch && bun run publish",
-    "release:minor": "npm version minor && bun run publish",
-    "release:major": "npm version major && bun run publish",
-    "push-release": "git push && git push --tags"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
-    "@effect/schema": "^0.75.5",
-    "@sinclair/typebox-codegen": "^0.11.1",
-    "@types/bun": "^1.2.18",
-    "@types/node": "^24.0.15",
-    "bun-types": "^1.2.18",
-    "effect": "^3.16.16",
-    "fs-extra": "^11.3.0",
-    "glob": "^11.0.3",
-    "lefthook": "^1.12.2",
-    "ts-morph": "^26.0.0",
-    "ts-to-zod": "^3.15.0",
-    "typebox": "^0.0.1",
-    "typescript": "^5.8.3",
-    "ultracite": "^5.0.46",
-    "valibot": "^1.1.0",
-    "yup": "^1.6.1",
-    "zod": "^4.0.5"
-  },
-  "exports": {
-    "./*": {
-      "types": "./dist/types/*/index.d.ts",
-      "import": "./dist/types/*/index.js",
-      "require": "./dist/types/*/index.js"
+    "name": "@oddlaceguy49/steam-web-api-types",
+    "version": "0.1.6",
+    "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
+    "type": "module",
+    "license": "MIT",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })\"",
+        "gen-script": "bun run scripts/generateSchemas.ts",
+        "gen:types": "bun run gen-script types",
+        "gen:zod": "bun run gen-script zod",
+        "gen:typebox": "bun run gen-script typebox",
+        "gen:valibot": "bun run gen-script valibot",
+        "gen:yup": "bun run gen-script yup",
+        "gen:effect": "bun run gen-script effect",
+        "gen:jsonschema": "bun run gen-script jsonschema",
+        "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+        "fix-generated-imports": "bun run scripts/fixGeneratedImports.ts",
+        "build:types": "tshy",
+        "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
+        "build": "bun run gen && bun run fix-generated-imports && bun run build:types",
+        "prepublishOnly": "bun run build",
+        "publish": "npm publish --access public",
+        "release:patch": "npm version patch && bun run publish",
+        "release:minor": "npm version minor && bun run publish",
+        "release:major": "npm version major && bun run publish",
+        "push-release": "git push && git push --tags"
     },
-    "./*/details": {
-      "types": "./dist/types/*/details.d.ts",
-      "import": "./dist/types/*/details.js",
-      "require": "./dist/types/*/details.js"
+    "devDependencies": {
+        "@biomejs/biome": "^2.1.2",
+        "@effect/schema": "^0.75.5",
+        "@sinclair/typebox-codegen": "^0.11.1",
+        "@types/bun": "^1.2.18",
+        "@types/node": "^24.0.15",
+        "bun-types": "^1.2.18",
+        "effect": "^3.16.16",
+        "fs-extra": "^11.3.0",
+        "glob": "^11.0.3",
+        "lefthook": "^1.12.2",
+        "ts-morph": "^26.0.0",
+        "ts-to-zod": "^3.15.0",
+        "typebox": "^0.0.1",
+        "typescript": "^5.8.3",
+        "ultracite": "^5.0.46",
+        "valibot": "^1.1.0",
+        "yup": "^1.6.1",
+        "zod": "^4.0.5",
+        "tshy": "^1.0.0"
     },
-    "./zod/*": {
-      "types": "./dist/zod/*/index.d.ts",
-      "import": "./dist/zod/*/index.js",
-      "require": "./dist/zod/*/index.js"
+    "tshy": {
+        "entries": {
+            "./src/generated/**/*.ts": {
+                "module": "esm"
+            }
+        },
+        "outputDir": "dist",
+        "esm": {
+            "fileName": "[name].js"
+        },
+        "cjs": {
+            "fileName": "[name].cjs"
+        },
+        "declaration": {
+            "fileName": "[name].d.ts",
+            "outputDir": "dist/types"
+        },
+        "exports": {
+            "./types/*": "./src/generated/types/*/index.ts",
+            "./types/*/details": "./src/generated/types/*/details.ts",
+            "./zod/*": "./src/generated/zod/*/index.ts",
+            "./zod/*/details": "./src/generated/zod/*/details.ts",
+            "./typebox/*": "./src/generated/typebox/*/index.ts",
+            "./typebox/*/details": "./src/generated/typebox/*/details.ts",
+            "./valibot/*": "./src/generated/valibot/*/index.ts",
+            "./valibot/*/details": "./src/generated/valibot/*/details.ts",
+            "./yup/*": "./src/generated/yup/*/index.ts",
+            "./yup/*/details": "./src/generated/yup/*/details.ts",
+            "./effect/*": "./src/generated/effect/*/index.ts",
+            "./effect/*/details": "./src/generated/effect/*/details.ts",
+            "./jsonschema/*": "./src/generated/jsonschema/*/index.ts",
+            "./jsonschema/*/details": "./src/generated/jsonschema/*/details.ts",
+            "./package.json": "./package.json"
+        },
+        "exclude": [
+            "src/types"
+        ]
     },
-    "./zod/*/details": {
-      "types": "./dist/zod/*/details.d.ts",
-      "import": "./dist/zod/*/details.js",
-      "require": "./dist/zod/*/details.js"
+    "exports": {
+        "./types/*": {
+            "import": {
+                "types": "./dist/esm/generated/types/*/index.d.ts",
+                "default": "./dist/esm/generated/types/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/types/*/index.d.ts",
+                "default": "./dist/commonjs/generated/types/*/index.js"
+            }
+        },
+        "./types/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/types/*/details.d.ts",
+                "default": "./dist/esm/generated/types/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/types/*/details.d.ts",
+                "default": "./dist/commonjs/generated/types/*/details.js"
+            }
+        },
+        "./zod/*": {
+            "import": {
+                "types": "./dist/esm/generated/zod/*/index.d.ts",
+                "default": "./dist/esm/generated/zod/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/zod/*/index.d.ts",
+                "default": "./dist/commonjs/generated/zod/*/index.js"
+            }
+        },
+        "./zod/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/zod/*/details.d.ts",
+                "default": "./dist/esm/generated/zod/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/zod/*/details.d.ts",
+                "default": "./dist/commonjs/generated/zod/*/details.js"
+            }
+        },
+        "./typebox/*": {
+            "import": {
+                "types": "./dist/esm/generated/typebox/*/index.d.ts",
+                "default": "./dist/esm/generated/typebox/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/typebox/*/index.d.ts",
+                "default": "./dist/commonjs/generated/typebox/*/index.js"
+            }
+        },
+        "./typebox/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/typebox/*/details.d.ts",
+                "default": "./dist/esm/generated/typebox/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/typebox/*/details.d.ts",
+                "default": "./dist/commonjs/generated/typebox/*/details.js"
+            }
+        },
+        "./valibot/*": {
+            "import": {
+                "types": "./dist/esm/generated/valibot/*/index.d.ts",
+                "default": "./dist/esm/generated/valibot/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/valibot/*/index.d.ts",
+                "default": "./dist/commonjs/generated/valibot/*/index.js"
+            }
+        },
+        "./valibot/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/valibot/*/details.d.ts",
+                "default": "./dist/esm/generated/valibot/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/valibot/*/details.d.ts",
+                "default": "./dist/commonjs/generated/valibot/*/details.js"
+            }
+        },
+        "./yup/*": {
+            "import": {
+                "types": "./dist/esm/generated/yup/*/index.d.ts",
+                "default": "./dist/esm/generated/yup/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/yup/*/index.d.ts",
+                "default": "./dist/commonjs/generated/yup/*/index.js"
+            }
+        },
+        "./yup/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/yup/*/details.d.ts",
+                "default": "./dist/esm/generated/yup/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/yup/*/details.d.ts",
+                "default": "./dist/commonjs/generated/yup/*/details.js"
+            }
+        },
+        "./effect/*": {
+            "import": {
+                "types": "./dist/esm/generated/effect/*/index.d.ts",
+                "default": "./dist/esm/generated/effect/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/effect/*/index.d.ts",
+                "default": "./dist/commonjs/generated/effect/*/index.js"
+            }
+        },
+        "./effect/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/effect/*/details.d.ts",
+                "default": "./dist/esm/generated/effect/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/effect/*/details.d.ts",
+                "default": "./dist/commonjs/generated/effect/*/details.js"
+            }
+        },
+        "./jsonschema/*": {
+            "import": {
+                "types": "./dist/esm/generated/jsonschema/*/index.d.ts",
+                "default": "./dist/esm/generated/jsonschema/*/index.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/jsonschema/*/index.d.ts",
+                "default": "./dist/commonjs/generated/jsonschema/*/index.js"
+            }
+        },
+        "./jsonschema/*/details": {
+            "import": {
+                "types": "./dist/esm/generated/jsonschema/*/details.d.ts",
+                "default": "./dist/esm/generated/jsonschema/*/details.js"
+            },
+            "require": {
+                "types": "./dist/commonjs/generated/jsonschema/*/details.d.ts",
+                "default": "./dist/commonjs/generated/jsonschema/*/details.js"
+            }
+        },
+        "./package.json": "./package.json"
     },
-    "./typebox/*": {
-      "types": "./dist/typebox/*/index.d.ts",
-      "import": "./dist/typebox/*/index.js",
-      "require": "./dist/typebox/*/index.js"
+    "peerDependencies": {
+        "@effect/schema": "^0.75.5",
+        "effect": "^3.16.16",
+        "typebox": "^0.0.1",
+        "valibot": "^1.1.0",
+        "yup": "^1.6.1",
+        "zod": "^3.0.0"
     },
-    "./typebox/*/details": {
-      "types": "./dist/typebox/*/details.d.ts",
-      "import": "./dist/typebox/*/details.js",
-      "require": "./dist/typebox/*/details.js"
-    },
-    "./valibot/*": {
-      "types": "./dist/valibot/*/index.d.ts",
-      "import": "./dist/valibot/*/index.js",
-      "require": "./dist/valibot/*/index.js"
-    },
-    "./valibot/*/details": {
-      "types": "./dist/valibot/*/details.d.ts",
-      "import": "./dist/valibot/*/details.js",
-      "require": "./dist/valibot/*/details.js"
-    },
-    "./yup/*": {
-      "types": "./dist/yup/*/index.d.ts",
-      "import": "./dist/yup/*/index.js",
-      "require": "./dist/yup/*/index.js"
-    },
-    "./yup/*/details": {
-      "types": "./dist/yup/*/details.d.ts",
-      "import": "./dist/yup/*/details.js",
-      "require": "./dist/yup/*/details.js"
-    },
-    "./effect/*": {
-      "types": "./dist/effect/*/index.d.ts",
-      "import": "./dist/effect/*/index.js",
-      "require": "./dist/effect/*/index.js"
-    },
-    "./effect/*/details": {
-      "types": "./dist/effect/*/details.d.ts",
-      "import": "./dist/effect/*/details.js",
-      "require": "./dist/effect/*/details.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "peerDependencies": {
-    "@effect/schema": "^0.75.5",
-    "effect": "^3.16.16",
-    "typebox": "^0.0.1",
-    "valibot": "^1.1.0",
-    "yup": "^1.6.1",
-    "zod": "^3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    },
-    "typebox": {
-      "optional": true
-    },
-    "valibot": {
-      "optional": true
-    },
-    "yup": {
-      "optional": true
-    },
-    "effect": {
-      "optional": true
-    },
-    "@effect/schema": {
-      "optional": true
+    "peerDependenciesMeta": {
+        "zod": {
+            "optional": true
+        },
+        "typebox": {
+            "optional": true
+        },
+        "valibot": {
+            "optional": true
+        },
+        "yup": {
+            "optional": true
+        },
+        "effect": {
+            "optional": true
+        },
+        "@effect/schema": {
+            "optional": true
+        }
     }
-  }
 }

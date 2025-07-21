@@ -225,3 +225,7 @@ worker-configuration.d.ts
 
 # generated
 /src/generated/
+
+# tshy
+.tshy
+.tshy-build
