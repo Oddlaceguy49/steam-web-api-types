@@ -24,10 +24,14 @@
         "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
         "build": "bun run gen && bun run fix-generated-imports && bun run build:types",
         "prepublishOnly": "bun run build",
-        "publish": "npm publish --access public",
-        "release:patch": "npm version patch && bun run publish",
-        "release:minor": "npm version minor && bun run publish",
-        "release:major": "npm version major && bun run publish",
+        "publish-actual": "npm publish --access public",
+        "version:patch": "npm version patch --no-git-tag-version",
+        "version:minor": "npm version minor --no-git-tag-version",
+        "version:major": "npm version major --no-git-tag-version",
+        "tag-and-push": "git add package.json && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git tag v$(node -p \"require('./package.json').version\") && git push --follow-tags",
+        "release:patch": "bun run version:patch && bun run build && bun run publish-actual && bun run tag-and-push",
+        "release:minor": "bun run version:minor && bun run build && bun run publish-actual && bun run tag-and-push",
+        "release:major": "bun run version:major && bun run build && bun run publish-actual && bun run tag-and-push",
         "push-release": "git push && git push --tags"
     },
     "devDependencies": {
