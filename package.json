@@ -23,11 +23,11 @@
         "build:types": "tshy",
         "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
         "build": "bun run gen && bun run fix-generated-imports && bun run build:types",
-        "prepublishOnly": "",
-        "publish": "npm publish --access public",
-        "release:patch": "npm version patch && bun run publish",
-        "release:minor": "npm version minor && bun run publish",
-        "release:major": "npm version major && bun run publish",
+        "prepublishOnly": "bun run build",
+        "publish:public": "npm publish --access public",
+        "release:patch": "npm version patch && bun run publish:public",
+        "release:minor": "npm version minor && bun run publish:public",
+        "release:major": "npm version major && bun run publish:public",
         "push-release": "git push && git push --tags"
     },
     "devDependencies": {
