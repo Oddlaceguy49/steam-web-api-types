@@ -15,7 +15,7 @@ It provides both pure TypeScript types for static analysis and optional schemas 
 
 ## Features
 
--   **Types by Default:** The main entry point provides pure TypeScript types with zero runtime dependencies.
+-   **Types:** The /types entry point provides pure TypeScript types with zero runtime dependencies.
 -   **Optional Schemas:** Includes secondary entry points for multiple popular validation libraries.
 -   **Accurate:** Modeled directly from the official [Steam Web API documentation](https://partner.steamgames.com/doc/webapi).
 -   **Organized:** Types and schemas are split into files that mirror the Steam API services (e.g., `ISteamUser.ts`).
@@ -38,37 +38,37 @@ It provides both pure TypeScript types for static analysis and optional schemas 
 
 ### Implemented Steam Web API Modules
 
--   [ ] IBroadcastService
--   [ ] ICloudService
--   [ ] ICheatReportingService
--   [ ] IEconMarketService
--   [ ] IEconService
--   [ ] IGameInventory
--   [ ] IGameNotificationsService
--   [ ] IGameServersService
--   [ ] IInventoryService
--   [ ] ILobbyMatchmakingService
+-   [x] IBroadcastService
+-   [x] ICloudService
+-   [x] ICheatReportingService
+-   [x] IEconMarketService
+-   [x] IEconService
+-   [x] IGameInventory
+-   [x] IGameNotificationsService
+-   [x] IGameServersService
+-   [x] IInventoryService
+-   [x] ILobbyMatchmakingService
 -   [x] IPlayerService
--   [ ] IPublishedFileService
--   [ ] ISiteLicenseService
--   [ ] ISteamApps
--   [ ] ISteamCDN
--   [ ] ISteamDirectory
--   [ ] ISteamEconomy
--   [ ] ISteamGameServerStats
--   [ ] ISteamLeaderboards
--   [ ] ISteamMicroTxn
--   [ ] ISteamMicroTxnSandbox
+-   [x] IPublishedFileService
+-   [x] ISiteLicenseService
+-   [x] ISteamApps
+-   [x] ISteamCDN
+-   [x] ISteamDirectory
+-   [x] ISteamEconomy
+-   [x] ISteamGameServerStats
+-   [x] ISteamLeaderboards
+-   [x] ISteamMicroTxn
+-   [x] ISteamMicroTxnSandbox
 -   [x] ISteamNews
--   [ ] ISteamRemoteStorage
+-   [x] ISteamRemoteStorage
 -   [x] ISteamUser
 -   [x] ISteamUserAuth
--   [ ] ISteamUserOAuth
--   [ ] ISteamUserStats
--   [ ] ISteamWebAPIUtil
--   [ ] ISteamWebUserPresenceOAuth
--   [ ] IStoreService
--   [ ] IWorkshopService
+-   [x] ISteamUserOAuth
+-   [x] ISteamUserStats
+-   [x] ISteamWebAPIUtil
+-   [x] ISteamWebUserPresenceOAuth
+-   [x] IStoreService
+-   [x] IWorkshopService
 
 ## Installation
 
@@ -88,10 +88,10 @@ yarn add --dev @oddlaceguy49/steam-web-api-types
 
 ## Basic Usage (Types Only)
 
-By default, you can import pure TypeScript interfaces for type casting and function signatures. This requires no additional libraries.
+You can import pure TypeScript interfaces for type casting and function signatures. This requires no additional libraries.
 
 ```typescript
-import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types/ISteamUser";
+import type { GetPlayerSummariesResponse } from "@oddlaceguy49/steam-web-api-types/types/ISteamUser";
 
 async function getSummaries(apiKey: string, steamids: string[]) {
     const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamids.join(

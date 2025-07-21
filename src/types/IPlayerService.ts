@@ -1,3 +1,8 @@
+/***
+ * JSDoc type definitions for the Steam Web API's IPlayerService.
+ * @see https://partner.steamgames.com/doc/webapi/IPlayerService
+ */
+
 /*** Parameters for the IPlayerService/GetRecentlyPlayedGames/v1 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/IPlayerService#GetRecentlyPlayedGames
  * @description Parameters for retrieving recently played games for a user.

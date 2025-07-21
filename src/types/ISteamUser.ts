@@ -1,3 +1,8 @@
+/***
+ * JSDoc type definitions for the Steam Web API's ISteamUser.
+ * @see https://partner.steamgames.com/doc/webapi/ISteamUser
+ */
+
 /*** The shape of a player object from the ISteamUser/GetPlayerSummaries/v2 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
  * @description Represents a player's summary information.

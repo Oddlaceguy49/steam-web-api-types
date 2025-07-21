@@ -1,3 +1,8 @@
+/***
+ * JSDoc type definitions for the Steam Web API's ISteamNews.
+ * @see https://partner.steamgames.com/doc/webapi/ISteamNews
+ */
+
 /*** Parameters for the ISteamNews/GetNewsForApp/v2 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/ISteamNews#GetNewsForApp
  * @description Parameters for retrieving news for a specific app.
@@ -146,8 +151,7 @@ export interface GetNewsForAppAuthedRequest {
 	feeds?: string;
 }
 
-/**
- * The response from the ISteamNews/GetNewsForAppAuthed/v1 endpoint.
+/*** The response from the ISteamNews/GetNewsForAppAuthed/v1 endpoint.
  * The structure is identical to GetNewsForAppResponse.
  * @see https://partner.steamgames.com/doc/webapi/ISteamNews#GetNewsForAppAuthed
  */
