@@ -189,6 +189,15 @@ async function main() {
 			const model = Codegen.TypeScriptToModel.Generate(transformedSourceText);
 			generatedCode = selectedGenerator.Generate(model);
 
+			if (targetPackage.toLowerCase() === "zod") {
+				console.log(
+					"\n🔧 Fixing up generated Zod code for v4 record syntax..."
+				);
+				const recordRegex = /z\.record\(([^)]+)\)/g;
+				const recordReplacement = "z.record(z.string(), $1)";
+				generatedCode = generatedCode.replace(recordRegex, recordReplacement);
+			}
+
 			if (targetPackage.toLowerCase() === "yup") {
 				console.log("\n🔧 Fixing up generated Yup code...");
 				generatedCode = generatedCode.replace(
@@ -197,16 +206,44 @@ async function main() {
 				);
 			}
 
-			// Currently broken, will fix later maybe?
+			if (targetPackage.toLowerCase() === "effect") {
+				console.log(
+					"\n🔧 Fixing up generated Effect code for older @effect/schema version..."
+				);
+
+				// Pass 1: Convert modern ES.Record(Key, Value) to the old object syntax.
+				// This regex handles nested parentheses in the value part.
+				const modernRecordRegex =
+					/ES\.Record\(([^,]+),\s*((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*)\)/g;
+				const modernRecordReplacement = "ES.Record({ key: $1, value: $2 })";
+				generatedCode = generatedCode.replace(
+					modernRecordRegex,
+					modernRecordReplacement
+				);
+
+				// Pass 2: Convert simple ES.Record(Value) to the old object syntax.
+				// This regex explicitly avoids matching if the argument is an object literal '{...}'
+				// to prevent double-replacing the output from Pass 1.
+				const simpleRecordRegex = /ES\.Record\(([^){},]+)\)/g;
+				const simpleRecordReplacement =
+					"ES.Record({ key: ES.String, value: $1 })";
+				generatedCode = generatedCode.replace(
+					simpleRecordRegex,
+					simpleRecordReplacement
+				);
+
+				// Replaces the modern @effect/schema import with the older path
+				generatedCode = generatedCode.replaceAll("@effect/schema", "effect");
+			}
+
 			if (targetPackage.toLowerCase() === "arktype") {
 				console.log("\n🔧 Fixing up generated ArkType code...");
 
-				// Add // @ts-expect-error above every 'SomeType[]' property value
 				generatedCode = generatedCode.replace(
 					/^(\s*\w+\s*:\s*)('(?:\w+)'|\w+)\[\](,?)/gm,
 					"// @ts-expect-error\n$1'$2[]'$3"
 				);
-				// Also handle cases like games: 'RecentlyPlayedGame[]'
+
 				generatedCode = generatedCode.replace(
 					/^(\s*\w+\s*:\s*)'(\w+\[\])'(,?)/gm,
 					"// @ts-expect-error\n$1'$2'$3"

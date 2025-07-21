@@ -43,7 +43,7 @@ export interface ServerInfo {
 	 */
 	gamedir: string;
 	/**
-	 * @minimum -1
+	 * @minimum "-1"
 	 * @description The region code where the server is located.
 	 */
 	region: number;
@@ -91,25 +91,36 @@ export interface GetServersAtAddressRequest {
 	addr: string;
 }
 
+/*** The success case for the GetServersAtAddress response, containing a list of servers. */
+interface GetServersAtAddressSuccess {
+	/**
+	 * @description Indicates the request was successful.
+	 */
+	success: true;
+	/**
+	 * @description An array of server information objects.
+	 */
+	servers: ServerInfo[];
+}
+
+/*** The failure case for the GetServersAtAddress response, containing an error message. */
+interface GetServersAtAddressFailure {
+	/**
+	 * @description Indicates the request failed.
+	 */
+	success: false;
+	/**
+	 * @description An error message describing the failure.
+	 */
+	message: string;
+}
+
 /*** The response from the ISteamApps/GetServersAtAddress/v1 endpoint.
  * @see https://partner.steamgames.com/doc/webapi/ISteamApps#GetServersAtAddress
- * @description Response containing a list of game servers at a given address.
+ * @description Response containing a list of game servers at a given address. This is a discriminated union based on the 'success' property.
  */
 export interface GetServersAtAddressResponse {
-	response: {
-		/**
-		 * @description True if the request was successful and servers were found.
-		 */
-		success: boolean;
-		/**
-		 * @description An array of server information objects. May be omitted on failure.
-		 */
-		servers?: ServerInfo[];
-		/**
-		 * @description An error message, if `success` is false.
-		 */
-		message?: string;
-	};
+	response: GetServersAtAddressSuccess | GetServersAtAddressFailure;
 }
 
 /*** Parameters for the ISteamApps/UpToDateCheck/v1 endpoint.

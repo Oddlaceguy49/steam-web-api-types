@@ -32,7 +32,6 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.2",
-        "@effect/schema": "^0.75.5",
         "@sinclair/typebox-codegen": "^0.11.1",
         "@types/bun": "^1.2.18",
         "@types/node": "^24.0.15",
@@ -43,13 +42,13 @@
         "lefthook": "^1.12.2",
         "ts-morph": "^26.0.0",
         "ts-to-zod": "^3.15.0",
+        "tshy": "^1.0.0",
         "typebox": "^0.0.1",
         "typescript": "^5.8.3",
         "ultracite": "^5.0.46",
         "valibot": "^1.1.0",
         "yup": "^1.6.1",
-        "zod": "^4.0.5",
-        "tshy": "^1.0.0"
+        "zod": "^4.0.5"
     },
     "tshy": {
         "entries": {
@@ -92,140 +91,168 @@
     "exports": {
         "./types/*": {
             "import": {
+                "source": "./src/generated/types/*/index.ts",
                 "types": "./dist/esm/generated/types/*/index.d.ts",
                 "default": "./dist/esm/generated/types/*/index.js"
             },
             "require": {
+                "source": "./src/generated/types/*/index.ts",
                 "types": "./dist/commonjs/generated/types/*/index.d.ts",
                 "default": "./dist/commonjs/generated/types/*/index.js"
             }
         },
         "./types/*/details": {
             "import": {
+                "source": "./src/generated/types/*/details.ts",
                 "types": "./dist/esm/generated/types/*/details.d.ts",
                 "default": "./dist/esm/generated/types/*/details.js"
             },
             "require": {
+                "source": "./src/generated/types/*/details.ts",
                 "types": "./dist/commonjs/generated/types/*/details.d.ts",
                 "default": "./dist/commonjs/generated/types/*/details.js"
             }
         },
         "./zod/*": {
             "import": {
+                "source": "./src/generated/zod/*/index.ts",
                 "types": "./dist/esm/generated/zod/*/index.d.ts",
                 "default": "./dist/esm/generated/zod/*/index.js"
             },
             "require": {
+                "source": "./src/generated/zod/*/index.ts",
                 "types": "./dist/commonjs/generated/zod/*/index.d.ts",
                 "default": "./dist/commonjs/generated/zod/*/index.js"
             }
         },
         "./zod/*/details": {
             "import": {
+                "source": "./src/generated/zod/*/details.ts",
                 "types": "./dist/esm/generated/zod/*/details.d.ts",
                 "default": "./dist/esm/generated/zod/*/details.js"
             },
             "require": {
+                "source": "./src/generated/zod/*/details.ts",
                 "types": "./dist/commonjs/generated/zod/*/details.d.ts",
                 "default": "./dist/commonjs/generated/zod/*/details.js"
             }
         },
         "./typebox/*": {
             "import": {
+                "source": "./src/generated/typebox/*/index.ts",
                 "types": "./dist/esm/generated/typebox/*/index.d.ts",
                 "default": "./dist/esm/generated/typebox/*/index.js"
             },
             "require": {
+                "source": "./src/generated/typebox/*/index.ts",
                 "types": "./dist/commonjs/generated/typebox/*/index.d.ts",
                 "default": "./dist/commonjs/generated/typebox/*/index.js"
             }
         },
         "./typebox/*/details": {
             "import": {
+                "source": "./src/generated/typebox/*/details.ts",
                 "types": "./dist/esm/generated/typebox/*/details.d.ts",
                 "default": "./dist/esm/generated/typebox/*/details.js"
             },
             "require": {
+                "source": "./src/generated/typebox/*/details.ts",
                 "types": "./dist/commonjs/generated/typebox/*/details.d.ts",
                 "default": "./dist/commonjs/generated/typebox/*/details.js"
             }
         },
         "./valibot/*": {
             "import": {
+                "source": "./src/generated/valibot/*/index.ts",
                 "types": "./dist/esm/generated/valibot/*/index.d.ts",
                 "default": "./dist/esm/generated/valibot/*/index.js"
             },
             "require": {
+                "source": "./src/generated/valibot/*/index.ts",
                 "types": "./dist/commonjs/generated/valibot/*/index.d.ts",
                 "default": "./dist/commonjs/generated/valibot/*/index.js"
             }
         },
         "./valibot/*/details": {
             "import": {
+                "source": "./src/generated/valibot/*/details.ts",
                 "types": "./dist/esm/generated/valibot/*/details.d.ts",
                 "default": "./dist/esm/generated/valibot/*/details.js"
             },
             "require": {
+                "source": "./src/generated/valibot/*/details.ts",
                 "types": "./dist/commonjs/generated/valibot/*/details.d.ts",
                 "default": "./dist/commonjs/generated/valibot/*/details.js"
             }
         },
         "./yup/*": {
             "import": {
+                "source": "./src/generated/yup/*/index.ts",
                 "types": "./dist/esm/generated/yup/*/index.d.ts",
                 "default": "./dist/esm/generated/yup/*/index.js"
             },
             "require": {
+                "source": "./src/generated/yup/*/index.ts",
                 "types": "./dist/commonjs/generated/yup/*/index.d.ts",
                 "default": "./dist/commonjs/generated/yup/*/index.js"
             }
         },
         "./yup/*/details": {
             "import": {
+                "source": "./src/generated/yup/*/details.ts",
                 "types": "./dist/esm/generated/yup/*/details.d.ts",
                 "default": "./dist/esm/generated/yup/*/details.js"
             },
             "require": {
+                "source": "./src/generated/yup/*/details.ts",
                 "types": "./dist/commonjs/generated/yup/*/details.d.ts",
                 "default": "./dist/commonjs/generated/yup/*/details.js"
             }
         },
         "./effect/*": {
             "import": {
+                "source": "./src/generated/effect/*/index.ts",
                 "types": "./dist/esm/generated/effect/*/index.d.ts",
                 "default": "./dist/esm/generated/effect/*/index.js"
             },
             "require": {
+                "source": "./src/generated/effect/*/index.ts",
                 "types": "./dist/commonjs/generated/effect/*/index.d.ts",
                 "default": "./dist/commonjs/generated/effect/*/index.js"
             }
         },
         "./effect/*/details": {
             "import": {
+                "source": "./src/generated/effect/*/details.ts",
                 "types": "./dist/esm/generated/effect/*/details.d.ts",
                 "default": "./dist/esm/generated/effect/*/details.js"
             },
             "require": {
+                "source": "./src/generated/effect/*/details.ts",
                 "types": "./dist/commonjs/generated/effect/*/details.d.ts",
                 "default": "./dist/commonjs/generated/effect/*/details.js"
             }
         },
         "./jsonschema/*": {
             "import": {
+                "source": "./src/generated/jsonschema/*/index.ts",
                 "types": "./dist/esm/generated/jsonschema/*/index.d.ts",
                 "default": "./dist/esm/generated/jsonschema/*/index.js"
             },
             "require": {
+                "source": "./src/generated/jsonschema/*/index.ts",
                 "types": "./dist/commonjs/generated/jsonschema/*/index.d.ts",
                 "default": "./dist/commonjs/generated/jsonschema/*/index.js"
             }
         },
         "./jsonschema/*/details": {
             "import": {
+                "source": "./src/generated/jsonschema/*/details.ts",
                 "types": "./dist/esm/generated/jsonschema/*/details.d.ts",
                 "default": "./dist/esm/generated/jsonschema/*/details.js"
             },
             "require": {
+                "source": "./src/generated/jsonschema/*/details.ts",
                 "types": "./dist/commonjs/generated/jsonschema/*/details.d.ts",
                 "default": "./dist/commonjs/generated/jsonschema/*/details.js"
             }
@@ -233,7 +260,6 @@
         "./package.json": "./package.json"
     },
     "peerDependencies": {
-        "@effect/schema": "^0.75.5",
         "effect": "^3.16.16",
         "typebox": "^0.0.1",
         "valibot": "^1.1.0",
@@ -254,9 +280,6 @@
             "optional": true
         },
         "effect": {
-            "optional": true
-        },
-        "@effect/schema": {
             "optional": true
         }
     }
