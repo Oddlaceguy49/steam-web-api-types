@@ -1,4 +1,3 @@
-// scripts/fixGeneratedImports.ts
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { sync } from "glob";
@@ -7,15 +6,14 @@ import { sync } from "glob";
 const projectRoot = process.cwd();
 
 console.log("✨ Fixing relative import paths in generated files...");
-console.log(`  Searching from project root: ${projectRoot}`); // Debugging: shows where glob starts looking
+console.log(`  Searching from project root: ${projectRoot}`); // Shows where glob starts looking
 
 // The glob pattern now includes the 'src/generated' part from the project root.
-// This is more explicit and often more reliable.
 // Only target .ts files, as they are the ones that TypeScript compiles
 // and where the missing .js extension errors occur.
 const files = sync("src/generated/**/*.ts", { cwd: projectRoot });
 
-console.log(`  Found ${files.length} files.`); // Debugging: confirm files are found
+console.log(`  Found ${files.length} files.`); // Confirm files are found
 
 let filesFixed = 0;
 
@@ -25,6 +23,7 @@ files.forEach((file) => {
 
 	const content = readFileSync(filePath, "utf8");
 
+	// WHY is regex like this? Why do I live?
 	// SIMPLIFIED REGEX: Targets the 'from "path"' part of import/export statements
 	// This regex captures:
 	// p1: 'from "' (the literal 'from' keyword followed by a space and a quote)
