@@ -2,15 +2,14 @@
   "name": "@oddlaceguy49/steam-web-api-types",
   "version": "0.1.6",
   "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
-  "module": "index.ts",
+  "type": "module",
   "license": "MIT",
   "files": [
     "dist"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "// --- GENERATOR SCRIPTS ---": "",
-    "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })",
+    "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })\"",
     "gen-script": "bun run scripts/generateSchemas.ts",
     "gen:types": "bun run gen-script types",
     "gen:zod": "bun run gen-script zod",
@@ -19,9 +18,8 @@
     "gen:yup": "bun run gen-script yup",
     "gen:effect": "bun run gen-script effect",
     "gen:jsonschema": "bun run gen-script jsonschema",
-    "// --- MAIN BUILD SCRIPT ---": "",
     "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "build:types": "tsc",
     "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
     "build": "bun run gen && bun run build:types",
     "prepublishOnly": "bun run build",
@@ -53,40 +51,64 @@
   },
   "exports": {
     "./*": {
-      "types": "./dist/types/*/index.d.ts"
+      "types": "./dist/types/*/index.d.ts",
+      "import": "./dist/types/*/index.js",
+      "require": "./dist/types/*/index.js"
     },
     "./*/details": {
-      "types": "./dist/types/*/details.d.ts"
+      "types": "./dist/types/*/details.d.ts",
+      "import": "./dist/types/*/details.js",
+      "require": "./dist/types/*/details.js"
     },
     "./zod/*": {
-      "types": "./dist/zod/*/index.d.ts"
+      "types": "./dist/zod/*/index.d.ts",
+      "import": "./dist/zod/*/index.js",
+      "require": "./dist/zod/*/index.js"
     },
     "./zod/*/details": {
-      "types": "./dist/zod/*/details.d.ts"
+      "types": "./dist/zod/*/details.d.ts",
+      "import": "./dist/zod/*/details.js",
+      "require": "./dist/zod/*/details.js"
     },
     "./typebox/*": {
-      "types": "./dist/typebox/*/index.d.ts"
+      "types": "./dist/typebox/*/index.d.ts",
+      "import": "./dist/typebox/*/index.js",
+      "require": "./dist/typebox/*/index.js"
     },
     "./typebox/*/details": {
-      "types": "./dist/typebox/*/details.d.ts"
+      "types": "./dist/typebox/*/details.d.ts",
+      "import": "./dist/typebox/*/details.js",
+      "require": "./dist/typebox/*/details.js"
     },
     "./valibot/*": {
-      "types": "./dist/valibot/*/index.d.ts"
+      "types": "./dist/valibot/*/index.d.ts",
+      "import": "./dist/valibot/*/index.js",
+      "require": "./dist/valibot/*/index.js"
     },
     "./valibot/*/details": {
-      "types": "./dist/valibot/*/details.d.ts"
+      "types": "./dist/valibot/*/details.d.ts",
+      "import": "./dist/valibot/*/details.js",
+      "require": "./dist/valibot/*/details.js"
     },
     "./yup/*": {
-      "types": "./dist/yup/*/index.d.ts"
+      "types": "./dist/yup/*/index.d.ts",
+      "import": "./dist/yup/*/index.js",
+      "require": "./dist/yup/*/index.js"
     },
     "./yup/*/details": {
-      "types": "./dist/yup/*/details.d.ts"
+      "types": "./dist/yup/*/details.d.ts",
+      "import": "./dist/yup/*/details.js",
+      "require": "./dist/yup/*/details.js"
     },
     "./effect/*": {
-      "types": "./dist/effect/*/index.d.ts"
+      "types": "./dist/effect/*/index.d.ts",
+      "import": "./dist/effect/*/index.js",
+      "require": "./dist/effect/*/index.js"
     },
     "./effect/*/details": {
-      "types": "./dist/effect/*/details.d.ts"
+      "types": "./dist/effect/*/details.d.ts",
+      "import": "./dist/effect/*/details.js",
+      "require": "./dist/effect/*/details.js"
     },
     "./package.json": "./package.json"
   },
