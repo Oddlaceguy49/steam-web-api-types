@@ -1,6 +1,6 @@
 {
     "name": "@oddlaceguy49/steam-web-api-types",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
     "type": "module",
     "license": "MIT",
