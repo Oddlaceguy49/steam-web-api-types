@@ -1,29 +1,23 @@
 {
     "name": "@oddlaceguy49/steam-web-api-types",
+    "author": "Oddlaceguy49",
     "version": "0.2.1",
     "description": "A comprehensive set of TypeScript type definitions for the raw Steam Web API.",
     "type": "module",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/oddlaceguy49/steam-web-api-types.git"
+    },
     "files": [
         "dist"
     ],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "pregen": "node -e \"require('fs').rmSync('src/generated', { recursive: true, force: true })\"",
-        "gen-script": "bun run scripts/generateSchemas.ts",
-        "gen:types": "bun run gen-script types",
-        "gen:zod": "bun run gen-script zod",
-        "gen:typebox": "bun run gen-script typebox",
-        "gen:valibot": "bun run gen-script valibot",
-        "gen:yup": "bun run gen-script yup",
-        "gen:effect": "bun run gen-script effect",
-        "gen:jsonschema": "bun run gen-script jsonschema",
-        "prebuild:types": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
-        "fix-generated-imports": "bun run scripts/fixGeneratedImports.ts",
-        "build:types": "tshy",
-        "gen": "echo 'Running all schema generators...' && bun run gen:types && bun run gen:zod && bun run gen:typebox && bun run gen:valibot && bun run gen:yup && bun run gen:effect && bun run gen:jsonschema",
-        "build": "bun run gen && bun run fix-generated-imports && bun run build:types",
-        "prepublishOnly": "bun run build",
+        "prebuild": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+        "gen": "echo 'Running all schema generators...' && bunx typebox-codegen-cli",
+        "build": "bun run gen && bunx tshy",
         "publish:public": "npm publish --access public",
         "release:patch": "npm version patch && bun run publish:public",
         "release:minor": "npm version minor && bun run publish:public",
@@ -32,6 +26,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.2",
+        "@oddlaceguy49/typebox-codegen-cli": "^0.1.3",
         "@sinclair/typebox-codegen": "^0.11.1",
         "@types/bun": "^1.2.18",
         "@types/node": "^24.0.15",
@@ -281,5 +276,23 @@
         "effect": {
             "optional": true
         }
-    }
+    },
+    "keywords": [
+        "steam",
+        "steam api",
+        "steamwebapi",
+        "valve",
+        "typescript",
+        "types",
+        "zod",
+        "typebox",
+        "valibot",
+        "yup",
+        "effect",
+        "schema",
+        "schemas",
+        "validation",
+        "validator",
+        "parser"
+    ]
 }
