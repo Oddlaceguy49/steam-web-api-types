@@ -18,6 +18,7 @@
         "prebuild": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
         "gen": "echo 'Running all schema generators...' && bunx typebox-codegen-cli",
         "build": "bun run gen && bunx tshy",
+        "prepublishOnly": "bun run build",
         "publish:public": "npm publish --access public",
         "release:patch": "npm version patch && bun run publish:public",
         "release:minor": "npm version minor && bun run publish:public",
