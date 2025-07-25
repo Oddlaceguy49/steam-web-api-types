@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": true,
-    "sourceMap": true,
-    "declarationMap": true,
+    "sourceMap": false,
+    "declarationMap": false,
     "emitDeclarationOnly": false,
     "strict": true,
     "skipLibCheck": true,
