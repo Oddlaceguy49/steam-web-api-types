@@ -23,11 +23,11 @@
         "release:patch": "npm version patch && bun run publish:public",
         "release:minor": "npm version minor && bun run publish:public",
         "release:major": "npm version major && bun run publish:public",
-        "push-release": "git push && git push --tags"
+        "push-release": "git push && git push --tags",
+        "test-cli": "bun run typebox-codegen-cli zod"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.2",
-        "@oddlaceguy49/typebox-codegen-cli": "^0.1.5",
         "@sinclair/typebox-codegen": "^0.11.1",
         "@types/bun": "^1.2.18",
         "@types/node": "^24.0.15",
@@ -43,7 +43,7 @@
         "ultracite": "^5.0.46",
         "valibot": "^1.1.0",
         "yup": "^1.6.1",
-        "zod": "^4.0.5"
+        "zod": "^4.0.10"
     },
     "tshy": {
         "entries": {
@@ -259,7 +259,7 @@
         "typebox": "^0.0.1",
         "valibot": "^1.1.0",
         "yup": "^1.6.1",
-        "zod": "^4.0.5"
+        "zod": "^4.0.10"
     },
     "peerDependenciesMeta": {
         "zod": {
